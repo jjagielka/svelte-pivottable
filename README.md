@@ -16,7 +16,7 @@ summarizing a data set into table or [Plotly.js](https://plot.ly/javascript/)
 chart with a true 2-d drag'n'drop UI, very similar to the one found in older
 versions of Microsoft Excel.
 
-A [live demo can be found here](https://jjagielka.github.io/svelte-pivottable/).
+A [live demo can be found here](https://jjagielka.github.io/svelte-pivottable-demo/).
 
 ![screencap](https://raw.githubusercontent.com/jjagielka/react-pivottable-grouping/master/examples/basic.gif)
 
@@ -186,13 +186,13 @@ if the value was the string `"null"`.
 ```js
 const data = [
     {
-        attr1: 'value1_attr1',
-        attr2: 'value1_attr2',
+        attr1: "value1_attr1",
+        attr2: "value1_attr2",
         //...
     },
     {
-        attr1: 'value2_attr1',
-        attr2: 'value2_attr2',
+        attr1: "value2_attr1",
+        attr2: "value2_attr2",
         //...
     },
     //...
@@ -209,9 +209,9 @@ compatible with the output of CSV parsing libraries like PapaParse.
 
 ```js
 const data = [
-    ['attr1', 'attr2'],
-    ['value1_attr1', 'value1_attr2'],
-    ['value2_attr1', 'value2_attr2'],
+    ["attr1", "attr2"],
+    ["value1_attr1", "value1_attr2"],
+    ["value2_attr1", "value2_attr2"],
     //...
 ];
 ```
