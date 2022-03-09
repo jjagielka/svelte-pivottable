@@ -1,0 +1,42 @@
+{
+  "name": "svelte-pivottable",
+  "version": "0.1.0",
+  "description": "A Svelte-based pivot table with grouping",
+  "scripts": {
+    "dev": "svelte-kit dev",
+    "build": "svelte-kit build",
+    "package": "svelte-kit package",
+    "preview": "svelte-kit preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jjagielka/svelte-pivottable.git"
+  },
+  "keywords": [
+    "svelte",
+    "sevltekit",
+    "pivottable"
+  ],
+  "author": {
+    "name": "Jakub Jagielka",
+    "email": "jjagielka@gmail.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jjagielka/svelte-pivottable/issues"
+  },
+  "homepage": "https://github.com/jjagielka/svelte-pivottable#readme",
+  "devDependencies": {
+    "@sveltejs/adapter-auto": "next",
+    "@sveltejs/kit": "^1.0.0-next.291",
+    "plotly.js": "^2.10.0",
+    "prop-types": "^15.8.1",
+    "sortablejs": "^1.14.0",
+    "svelte": "^3.44.0",
+    "svelte-preprocess": "^4.10.4",
+    "svelte2tsx": "^0.5.5",
+    "typescript": "^4.6.2"
+  },
+  "type": "module",
+  "dependencies": {}
+}
