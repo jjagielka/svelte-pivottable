@@ -1,10 +1,10 @@
 <script>
-    import PivotTableUI from '$lib/PivotTableUI.svelte';
-    import data from './_montreal.json';
-    import { derivers } from '$lib/Utilities';
-    import TableRenderers from '$lib/TableRenderers';
-    import PlotlyRenderers from '$lib/PlotlyRenderers';
-    import { onMount } from 'svelte';
+    import PivotTableUI from "$lib/PivotTableUI.svelte";
+    import data from "./_montreal.json";
+    import { derivers } from "$lib/Utilities";
+    import TableRenderers from "$lib/TableRenderers";
+    import PlotlyRenderers from "$lib/PlotlyRenderers";
+    import { onMount } from "svelte";
 
     let plotlyRenderers = {};
     let renderers;
@@ -12,7 +12,8 @@
     onMount(async () => {
         // plotly.js requires an access to window object
         // static import in sveltekit causes a problem
-        const Plotly = await import('plotly.js/dist/plotly');
+        // const Plotly = await import("plotly.js/dist/plotly");
+        const Plotly = window.Plotly;
 
         // create Plotly renderers via dependency injection
         plotlyRenderers = PlotlyRenderers(Plotly);
@@ -25,24 +26,26 @@
         colGroupBefore = false;
 
     const derivedAttributes = {
-        'Age Bin': derivers.bin('Age', 10),
-        'Gender Imbalance': function (mp) {
-            return mp['Gender'] == 'Male' ? 1 : -1;
+        "Age Bin": derivers.bin("Age", 10),
+        "Gender Imbalance": function (mp) {
+            return mp["Gender"] == "Male" ? 1 : -1;
         },
     };
 
     let options = {
-        rows: ['Province', 'Party'],
-        cols: ['Gender', 'Age Bin'],
+        rows: ["Province", "Party"],
+        cols: ["Gender", "Age Bin"],
         data,
         derivedAttributes,
-        hiddenFromAggregators: ['Province', 'Party'],
+        hiddenFromAggregators: ["Province", "Party"],
     };
 </script>
 
 <svelte:head>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css?family=Dosis|Open+Sans" rel="stylesheet" />
+    <script src="https://cdn.plot.ly/plotly-basic-latest.min.js"></script>
+
     <title>Svelte pivottable</title>
 </svelte:head>
 
@@ -126,7 +129,7 @@
     }
     p,
     .navbar {
-        font-family: 'Open Sans', sans-serif;
+        font-family: "Open Sans", sans-serif;
         font-size: 16px;
         line-height: 26px;
     }
@@ -143,7 +146,7 @@
     .jumbotron h1 {
         font-size: 58px;
         line-height: 60px;
-        font-family: 'Dosis', sans-serif;
+        font-family: "Dosis", sans-serif;
     }
 
     .jumbotron p {
