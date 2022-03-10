@@ -1,6 +1,6 @@
 {
   "name": "svelte-pivottable",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A Svelte-based pivot table with grouping",
   "scripts": {
     "dev": "svelte-kit dev",
@@ -30,12 +30,13 @@
     "@sveltejs/adapter-auto": "next",
     "@sveltejs/adapter-static": "^1.0.0-next.29",
     "@sveltejs/kit": "^1.0.0-next.291",
-    "prop-types": "^15.8.1",
-    "sortablejs": "^1.14.0",
     "svelte": "^3.44.0",
     "svelte-preprocess": "^4.10.4",
     "svelte2tsx": "^0.5.5",
     "typescript": "^4.6.2"
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "sortablejs": "^1.14.0"
+  }
 }

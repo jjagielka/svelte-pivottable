@@ -13,7 +13,6 @@ const config = {
             emitTypes: false,
         },
         paths: {
-            base: "/",
             assets: "https://jjagielka.github.io/svelte-pivottable-demo",
         },
         prerender: { default: true },
