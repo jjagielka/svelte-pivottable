@@ -85,6 +85,7 @@ To add the Plotly renderers to your app, you can use the following pattern:
         ["value1", "value2"],
     ];
 </script>
+
 <PivotTableUI
     data={data}
     renderers={Object.assign({}, TableRenderers, plotlyRenderers)}
