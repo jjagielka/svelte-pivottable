@@ -69,7 +69,7 @@ npm install --save react-pivottable react-plotly.js plotly.js react react-dom
 
 To add the Plotly renderers to your app, you can use the following pattern:
 
-```js
+```svelte
 <script>
     import { PivotTableUI } from "svelte-pivottable/PivotTableUI";
     import TableRenderers from "svelte-pivottable/TableRenderers";
@@ -97,7 +97,7 @@ If you would rather not install and bundle `plotly.js` but rather get it into
 your app via something like `<script>` tag, you can ignore `react-plotly.js`'
 peer-dependcy warning and handle the dependency injection like this:
 
-```js
+```svelte
 <script>
     import { PivotTableUI } from "react-pivottable/PivotTableUI";
     import TableRenderers from "react-pivottable/TableRenderers";
