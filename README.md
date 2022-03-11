@@ -40,7 +40,7 @@ maintains essentially no state of its own.
     import { PivotTableUI } from "svelte-pivottable/PivotTableUI";
 
     const options = {
-        // see documenation for supporte options
+        // see documenation for supported options
         };
 
     // see documentation for supported input formats
