@@ -37,7 +37,7 @@ maintains essentially no state of its own.
 
 ```svelte
 <script>
-    import PivotTableUI from "svelte-pivottable/PivotTableUI";
+    import { PivotTableUI } from "svelte-pivottable/PivotTableUI";
 
     const options = {
         // see documenation for supporte options
@@ -71,7 +71,7 @@ To add the Plotly renderers to your app, you can use the following pattern:
 
 ```js
 <script>
-    import PivotTableUI from "svelte-pivottable/PivotTableUI";
+    import { PivotTableUI } from "svelte-pivottable/PivotTableUI";
     import TableRenderers from "svelte-pivottable/TableRenderers";
     import Plot from "react-plotly.js";
     import PlotlyRenderers from "svelte-pivottable/PlotlyRenderers";
@@ -99,7 +99,7 @@ peer-dependcy warning and handle the dependency injection like this:
 
 ```js
 <script>
-    import PivotTableUI from "react-pivottable/PivotTableUI";
+    import { PivotTableUI } from "react-pivottable/PivotTableUI";
     import TableRenderers from "react-pivottable/TableRenderers";
     import PlotlyRenderers from "svelte-pivottable/PlotlyRenderers";
 
