@@ -5,32 +5,26 @@
     import MainTable from './UI/MainTable.svelte';
     import PivotTable from './PivotTable.svelte';
     import TableRenderers from './TableRenderers';
-    import { delta } from './UI/utils';
-    import { PivotData, sortAs } from './Utilities';
+    import { PivotData, sortAs, aggregators as defaultAggregators } from './Utilities';
 
     export let rendererName = 'Table',
         renderers = TableRenderers,
+        aggregatorName = 'Count',
+        aggregators = defaultAggregators,
         hiddenAttributes = [],
         hiddenFromAggregators = [],
         hiddenFromDragDrop = [],
         unusedOrientationCutoff = 85,
         menuLimit = 500;
 
+    // pivotData props managed by PivotTableUI
+    export let { derivedAttributes, cols, rows, vals, sorters, valueFilter } = PivotData.defaultProps;
+
     export let data;
 
     let unusedOrder = [],
         attrValues = {};
 
-    let props = { ...PivotData.defaultProps, ...$$restProps };
-
-    // monitor the $$restProps changes
-    let oldProps = {};
-    $: {
-        props = { ...props, ...delta($$restProps, oldProps) };
-        oldProps = $$restProps;
-    }
-
-    let derivedAttributes = props.derivedAttributes; // TODO: this is not reactive, should be changed somehow
     $: {
         attrValues = {};
 
@@ -56,17 +50,13 @@
         });
     }
 
-    function propUpdater(key) {
-        return (value) => (props[key] = value);
-    }
-
     function notHidden(e) {
         return !hiddenAttributes.includes(e) && !hiddenFromDragDrop.includes(e);
     }
 
     let colAttrs, rowAttrs;
-    $: colAttrs = props.cols.filter(notHidden);
-    $: rowAttrs = props.rows.filter(notHidden);
+    $: colAttrs = cols.filter(notHidden);
+    $: rowAttrs = rows.filter(notHidden);
 
     let unusedAttrs, horizUnused, valAttrs;
     $: {
@@ -87,6 +77,11 @@
         rendererName = rendererName in renderers ? rendererName : Object.keys(renderers)[0];
         renderer = renderers[rendererName];
     }
+    let aggregator;
+    $: {
+        aggregatorName = aggregatorName in aggregators ? aggregatorName : Object.keys(aggregators)[0];
+        aggregator = aggregators[aggregatorName];
+    }
 </script>
 
 <MainTable {horizUnused}>
@@ -94,46 +89,58 @@
 
     <Aggregators
         slot="aggregatorCell"
-        aggregatorName={props.aggregatorName}
-        aggregators={props.aggregators}
+        {aggregatorName}
+        {aggregators}
         {valAttrs}
-        onChange={propUpdater('aggregatorName')}
-        onUpdate={propUpdater('vals')}
-        vals={props.vals}
+        onChange={(v) => (aggregatorName = v)}
+        onUpdate={(v) => (vals = v)}
+        {vals}
     />
 
     <DnDCell
         slot="unusedAttrsCell"
-        sorters={props.sorters}
-        valueFilter={props.valueFilter}
+        {sorters}
+        {valueFilter}
         {attrValues}
         items={unusedAttrs}
         onChange={(order) => (unusedOrder = order)}
-        onUpdate={propUpdater('valueFilter')}
+        onUpdate={(v) => (valueFilter = v)}
         {menuLimit}
     />
 
     <DnDCell
         slot="colAttrsCell"
-        sorters={props.sorters}
-        valueFilter={props.valueFilter}
+        {sorters}
+        {valueFilter}
         {attrValues}
         items={colAttrs}
-        onChange={propUpdater('cols')}
-        onUpdate={propUpdater('valueFilter')}
+        onChange={(v) => (cols = v)}
+        onUpdate={(v) => (valueFilter = v)}
         {menuLimit}
     />
 
     <DnDCell
         slot="rowAttrsCell"
-        sorters={props.sorters}
-        valueFilter={props.valueFilter}
+        {sorters}
+        {valueFilter}
         {attrValues}
         items={rowAttrs}
-        onChange={propUpdater('rows')}
-        onUpdate={propUpdater('valueFilter')}
+        onChange={(v) => (rows = v)}
+        onUpdate={(v) => (valueFilter = v)}
         {menuLimit}
     />
 
-    <PivotTable slot="outputCell" {renderer} {...props} {data} />
+    <PivotTable
+        slot="outputCell"
+        {renderer}
+        {...$$restProps}
+        {cols}
+        {rows}
+        {vals}
+        {derivedAttributes}
+        {aggregator}
+        {data}
+        {sorters}
+        {valueFilter}
+    />
 </MainTable>

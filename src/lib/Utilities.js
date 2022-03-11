@@ -11,9 +11,9 @@
  */
 
 const addSeparators = function (nStr, thousandsSep, decimalSep) {
-    const x = String(nStr).split(".");
+    const x = String(nStr).split('.');
     let x1 = x[0];
-    const x2 = x.length > 1 ? decimalSep + x[1] : "";
+    const x2 = x.length > 1 ? decimalSep + x[1] : '';
     const rgx = /(\d+)(\d{3})/;
     while (rgx.test(x1)) {
         x1 = x1.replace(rgx, `$1${thousandsSep}$2`);
@@ -25,15 +25,15 @@ const numberFormat = function (opts_in) {
     const defaults = {
         digitsAfterDecimal: 2,
         scaler: 1,
-        thousandsSep: ",",
-        decimalSep: ".",
-        prefix: "",
-        suffix: "",
+        thousandsSep: ',',
+        decimalSep: '.',
+        prefix: '',
+        suffix: '',
     };
     const opts = Object.assign({}, defaults, opts_in);
     return function (x) {
         if (isNaN(x) || !isFinite(x)) {
-            return "";
+            return '';
         }
         const result = addSeparators(
             (opts.scaler * x).toFixed(opts.digitsAfterDecimal),
@@ -57,10 +57,10 @@ const naturalSort = (as = null, bs = null, nulls_first = true) => {
     }
 
     // then raw NaNs
-    if (typeof as === "number" && isNaN(as)) {
+    if (typeof as === 'number' && isNaN(as)) {
         return -1;
     }
-    if (typeof bs === "number" && isNaN(bs)) {
+    if (typeof bs === 'number' && isNaN(bs)) {
         return 1;
     }
 
@@ -75,13 +75,13 @@ const naturalSort = (as = null, bs = null, nulls_first = true) => {
     }
 
     // within that, true numbers before numbery strings
-    if (typeof as === "number" && typeof bs !== "number") {
+    if (typeof as === 'number' && typeof bs !== 'number') {
         return -1;
     }
-    if (typeof bs === "number" && typeof as !== "number") {
+    if (typeof bs === 'number' && typeof as !== 'number') {
         return 1;
     }
-    if (typeof as === "number" && typeof bs === "number") {
+    if (typeof as === 'number' && typeof bs === 'number') {
         return 0;
     }
 
@@ -111,7 +111,7 @@ const naturalSort = (as = null, bs = null, nulls_first = true) => {
         const b1 = b.shift();
         if (a1 !== b1) {
             if (rd.test(a1) && rd.test(b1)) {
-                return a1.replace(rz, ".0") - b1.replace(rz, ".0");
+                return a1.replace(rz, '.0') - b1.replace(rz, '.0');
             }
             return a1 > b1 ? 1 : -1;
         }
@@ -127,7 +127,7 @@ const sortAs = function (order) {
     for (const i in order) {
         const x = order[i];
         mapping[x] = i;
-        if (typeof x === "string") {
+        if (typeof x === 'string') {
             l_mapping[x.toLowerCase()] = i;
         }
     }
@@ -158,9 +158,9 @@ const sortAs = function (order) {
 
 const getSort = function (sorters, attr) {
     if (sorters) {
-        if (typeof sorters === "function") {
+        if (typeof sorters === 'function') {
             const sort = sorters(attr);
-            if (typeof sort === "function") {
+            if (typeof sort === 'function') {
                 return sort;
             }
         } else if (attr in sorters) {
@@ -176,7 +176,7 @@ const usFmtInt = numberFormat({ digitsAfterDecimal: 0 });
 const usFmtPct = numberFormat({
     digitsAfterDecimal: 1,
     scaler: 100,
-    suffix: "%",
+    suffix: '%',
 });
 
 const aggregatorTemplates = {
@@ -210,7 +210,7 @@ const aggregatorTemplates = {
                         return fn(this.uniq);
                     },
                     format: formatter,
-                    numInputs: typeof attr !== "undefined" ? 0 : 1,
+                    numInputs: typeof attr !== 'undefined' ? 0 : 1,
                 };
             };
         };
@@ -230,7 +230,7 @@ const aggregatorTemplates = {
                         return this.sum;
                     },
                     format: formatter,
-                    numInputs: typeof attr !== "undefined" ? 0 : 1,
+                    numInputs: typeof attr !== 'undefined' ? 0 : 1,
                 };
             };
         };
@@ -241,19 +241,19 @@ const aggregatorTemplates = {
             return function (data) {
                 return {
                     val: null,
-                    sorter: getSort(typeof data !== "undefined" ? data.sorters : null, attr),
+                    sorter: getSort(typeof data !== 'undefined' ? data.sorters : null, attr),
                     push(record) {
                         let x = record[attr];
-                        if (["min", "max"].includes(mode)) {
+                        if (['min', 'max'].includes(mode)) {
                             x = parseFloat(x);
                             if (!isNaN(x)) {
                                 this.val = Math[mode](x, this.val !== null ? this.val : x);
                             }
                         }
-                        if (mode === "first" && this.sorter(x, this.val !== null ? this.val : x) <= 0) {
+                        if (mode === 'first' && this.sorter(x, this.val !== null ? this.val : x) <= 0) {
                             this.val = x;
                         }
-                        if (mode === "last" && this.sorter(x, this.val !== null ? this.val : x) >= 0) {
+                        if (mode === 'last' && this.sorter(x, this.val !== null ? this.val : x) >= 0) {
                             this.val = x;
                         }
                     },
@@ -266,7 +266,7 @@ const aggregatorTemplates = {
                         }
                         return formatter(x);
                     },
-                    numInputs: typeof attr !== "undefined" ? 0 : 1,
+                    numInputs: typeof attr !== 'undefined' ? 0 : 1,
                 };
             };
         };
@@ -292,13 +292,13 @@ const aggregatorTemplates = {
                         return (this.vals[Math.floor(i)] + this.vals[Math.ceil(i)]) / 2.0;
                     },
                     format: formatter,
-                    numInputs: typeof attr !== "undefined" ? 0 : 1,
+                    numInputs: typeof attr !== 'undefined' ? 0 : 1,
                 };
             };
         };
     },
 
-    runningStat(mode = "mean", ddof = 1, formatter = usFmt) {
+    runningStat(mode = 'mean', ddof = 1, formatter = usFmt) {
         return function ([attr]) {
             return function () {
                 return {
@@ -319,7 +319,7 @@ const aggregatorTemplates = {
                         this.m = m_new;
                     },
                     value() {
-                        if (mode === "mean") {
+                        if (mode === 'mean') {
                             if (this.n === 0) {
                                 return 0 / 0;
                             }
@@ -329,16 +329,16 @@ const aggregatorTemplates = {
                             return 0;
                         }
                         switch (mode) {
-                            case "var":
+                            case 'var':
                                 return this.s / (this.n - ddof);
-                            case "stdev":
+                            case 'stdev':
                                 return Math.sqrt(this.s / (this.n - ddof));
                             default:
-                                throw new Error("unknown mode for runningStat");
+                                throw new Error('unknown mode for runningStat');
                         }
                     },
                     format: formatter,
-                    numInputs: typeof attr !== "undefined" ? 0 : 1,
+                    numInputs: typeof attr !== 'undefined' ? 0 : 1,
                 };
             };
         };
@@ -362,13 +362,13 @@ const aggregatorTemplates = {
                         return this.sumNum / this.sumDenom;
                     },
                     format: formatter,
-                    numInputs: typeof num !== "undefined" && typeof denom !== "undefined" ? 0 : 2,
+                    numInputs: typeof num !== 'undefined' && typeof denom !== 'undefined' ? 0 : 2,
                 };
             };
         };
     },
 
-    fractionOf(wrapped, type = "total", formatter = usFmtPct) {
+    fractionOf(wrapped, type = 'total', formatter = usFmtPct) {
         return (...x) =>
             function (data, rowKey, colKey) {
                 return {
@@ -396,62 +396,62 @@ aggregatorTemplates.listUnique = (s) =>
         (x) => x.join(s),
         (x) => x
     );
-aggregatorTemplates.max = (f) => aggregatorTemplates.extremes("max", f);
-aggregatorTemplates.min = (f) => aggregatorTemplates.extremes("min", f);
-aggregatorTemplates.first = (f) => aggregatorTemplates.extremes("first", f);
-aggregatorTemplates.last = (f) => aggregatorTemplates.extremes("last", f);
+aggregatorTemplates.max = (f) => aggregatorTemplates.extremes('max', f);
+aggregatorTemplates.min = (f) => aggregatorTemplates.extremes('min', f);
+aggregatorTemplates.first = (f) => aggregatorTemplates.extremes('first', f);
+aggregatorTemplates.last = (f) => aggregatorTemplates.extremes('last', f);
 aggregatorTemplates.median = (f) => aggregatorTemplates.quantile(0.5, f);
-aggregatorTemplates.average = (f) => aggregatorTemplates.runningStat("mean", 1, f);
-aggregatorTemplates.var = (ddof, f) => aggregatorTemplates.runningStat("var", ddof, f);
-aggregatorTemplates.stdev = (ddof, f) => aggregatorTemplates.runningStat("stdev", ddof, f);
+aggregatorTemplates.average = (f) => aggregatorTemplates.runningStat('mean', 1, f);
+aggregatorTemplates.var = (ddof, f) => aggregatorTemplates.runningStat('var', ddof, f);
+aggregatorTemplates.stdev = (ddof, f) => aggregatorTemplates.runningStat('stdev', ddof, f);
 
 // default aggregators & renderers use US naming and number formatting
 const aggregators = ((tpl) => ({
     Count: tpl.count(usFmtInt),
-    "Count Unique Values": tpl.countUnique(usFmtInt),
-    "List Unique Values": tpl.listUnique(", "),
+    'Count Unique Values': tpl.countUnique(usFmtInt),
+    'List Unique Values': tpl.listUnique(', '),
     Sum: tpl.sum(usFmt),
-    "Integer Sum": tpl.sum(usFmtInt),
+    'Integer Sum': tpl.sum(usFmtInt),
     Average: tpl.average(usFmt),
     Median: tpl.median(usFmt),
-    "Sample Variance": tpl.var(1, usFmt),
-    "Sample Standard Deviation": tpl.stdev(1, usFmt),
+    'Sample Variance': tpl.var(1, usFmt),
+    'Sample Standard Deviation': tpl.stdev(1, usFmt),
     Minimum: tpl.min(usFmt),
     Maximum: tpl.max(usFmt),
     First: tpl.first(usFmt),
     Last: tpl.last(usFmt),
-    "Sum over Sum": tpl.sumOverSum(usFmt),
-    "Sum as Fraction of Total": tpl.fractionOf(tpl.sum(), "total", usFmtPct),
-    "Sum as Fraction of Rows": tpl.fractionOf(tpl.sum(), "row", usFmtPct),
-    "Sum as Fraction of Columns": tpl.fractionOf(tpl.sum(), "col", usFmtPct),
-    "Count as Fraction of Total": tpl.fractionOf(tpl.count(), "total", usFmtPct),
-    "Count as Fraction of Rows": tpl.fractionOf(tpl.count(), "row", usFmtPct),
-    "Count as Fraction of Columns": tpl.fractionOf(tpl.count(), "col", usFmtPct),
+    'Sum over Sum': tpl.sumOverSum(usFmt),
+    'Sum as Fraction of Total': tpl.fractionOf(tpl.sum(), 'total', usFmtPct),
+    'Sum as Fraction of Rows': tpl.fractionOf(tpl.sum(), 'row', usFmtPct),
+    'Sum as Fraction of Columns': tpl.fractionOf(tpl.sum(), 'col', usFmtPct),
+    'Count as Fraction of Total': tpl.fractionOf(tpl.count(), 'total', usFmtPct),
+    'Count as Fraction of Rows': tpl.fractionOf(tpl.count(), 'row', usFmtPct),
+    'Count as Fraction of Columns': tpl.fractionOf(tpl.count(), 'col', usFmtPct),
 }))(aggregatorTemplates);
 
 const locales = {
     en: {
         aggregators,
         localeStrings: {
-            renderError: "An error occurred rendering the PivotTable results.",
-            computeError: "An error occurred computing the PivotTable results.",
-            uiRenderError: "An error occurred rendering the PivotTable UI.",
-            selectAll: "Select All",
-            selectNone: "Select None",
-            tooMany: "(too many to list)",
-            filterResults: "Filter values",
-            apply: "Apply",
-            cancel: "Cancel",
-            totals: "Totals",
-            vs: "vs",
-            by: "by",
+            renderError: 'An error occurred rendering the PivotTable results.',
+            computeError: 'An error occurred computing the PivotTable results.',
+            uiRenderError: 'An error occurred rendering the PivotTable UI.',
+            selectAll: 'Select All',
+            selectNone: 'Select None',
+            tooMany: '(too many to list)',
+            filterResults: 'Filter values',
+            apply: 'Apply',
+            cancel: 'Cancel',
+            totals: 'Totals',
+            vs: 'vs',
+            by: 'by',
         },
     },
 };
 
 // dateFormat deriver l10n requires month and day names to be passed in directly
-const mthNamesEn = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const dayNamesEn = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const mthNamesEn = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const dayNamesEn = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const zeroPad = (number) => `0${number}`.substr(-2, 2); // eslint-disable-line no-magic-numbers
 
 const derivers = {
@@ -459,31 +459,31 @@ const derivers = {
         return (record) => record[col] - (record[col] % binWidth);
     },
     dateFormat(col, formatString, utcOutput = false, mthNames = mthNamesEn, dayNames = dayNamesEn) {
-        const utc = utcOutput ? "UTC" : "";
+        const utc = utcOutput ? 'UTC' : '';
         return function (record) {
             const date = new Date(Date.parse(record[col]));
             if (isNaN(date)) {
-                return "";
+                return '';
             }
             return formatString.replace(/%(.)/g, function (m, p) {
                 switch (p) {
-                    case "y":
+                    case 'y':
                         return date[`get${utc}FullYear`]();
-                    case "m":
+                    case 'm':
                         return zeroPad(date[`get${utc}Month`]() + 1);
-                    case "n":
+                    case 'n':
                         return mthNames[date[`get${utc}Month`]()];
-                    case "d":
+                    case 'd':
                         return zeroPad(date[`get${utc}Date`]());
-                    case "w":
+                    case 'w':
                         return dayNames[date[`get${utc}Day`]()];
-                    case "x":
+                    case 'x':
                         return date[`get${utc}Day`]();
-                    case "H":
+                    case 'H':
                         return zeroPad(date[`get${utc}Hours`]());
-                    case "M":
+                    case 'M':
                         return zeroPad(date[`get${utc}Minutes`]());
-                    case "S":
+                    case 'S':
                         return zeroPad(date[`get${utc}Seconds`]());
                     default:
                         return `%${p}`;
@@ -504,7 +504,7 @@ class PivotData {
     constructor(inputProps = {}) {
         this.props = Object.assign({}, PivotData.defaultProps, inputProps);
 
-        this.aggregator = this.props.aggregators[this.props.aggregatorName](this.props.vals);
+        this.aggregator = this.props.aggregator(this.props.vals);
         this.tree = {};
         this.rowKeys = [];
         this.colKeys = [];
@@ -537,7 +537,7 @@ class PivotData {
             }
             for (const k in criteria) {
                 const v = criteria[k];
-                if (v !== (k in record ? record[k] : "null")) {
+                if (v !== (k in record ? record[k] : 'null')) {
                     return;
                 }
             }
@@ -573,20 +573,20 @@ class PivotData {
             this.sorted = true;
             const v = (r, c) => this.getAggregator(r, c).value();
             switch (this.props.rowOrder) {
-                case "value_a_to_z":
+                case 'value_a_to_z':
                     this.rowKeys.sort((a, b) => naturalSort(v(a, []), v(b, [])));
                     break;
-                case "value_z_to_a":
+                case 'value_z_to_a':
                     this.rowKeys.sort((a, b) => -naturalSort(v(a, []), v(b, [])));
                     break;
                 default:
                     this.rowKeys.sort(this.arrSort(this.props.rows, this.props.rowGroupBefore));
             }
             switch (this.props.colOrder) {
-                case "value_a_to_z":
+                case 'value_a_to_z':
                     this.colKeys.sort((a, b) => naturalSort(v([], a), v([], b)));
                     break;
-                case "value_z_to_a":
+                case 'value_z_to_a':
                     this.colKeys.sort((a, b) => -naturalSort(v([], a), v([], b)));
                     break;
                 default:
@@ -610,10 +610,10 @@ class PivotData {
         let colKeys = [];
         let rowKeys = [];
         for (const x of Array.from(this.props.cols)) {
-            colKeys.push(x in record ? record[x] : "null");
+            colKeys.push(x in record ? record[x] : 'null');
         }
         for (const x of Array.from(this.props.rows)) {
-            rowKeys.push(x in record ? record[x] : "null");
+            rowKeys.push(x in record ? record[x] : 'null');
         }
 
         colKeys = this.props.grouping ? subarrays(colKeys) : [colKeys];
@@ -679,7 +679,7 @@ class PivotData {
                     return null;
                 },
                 format() {
-                    return "";
+                    return '';
                 },
             }
         );
@@ -704,7 +704,7 @@ PivotData.forEachRecord = function (input, derivedAttributes, f) {
     }
 
     // if it's a function, have it call us back
-    if (typeof input === "function") {
+    if (typeof input === 'function') {
         return input(addRecord);
     } else if (Array.isArray(input)) {
         if (Array.isArray(input[0])) {
@@ -735,7 +735,7 @@ PivotData.forEachRecord = function (input, derivedAttributes, f) {
             return result1;
         })();
     }
-    throw new Error("unknown input format");
+    throw new Error('unknown input format');
 };
 
 PivotData.defaultProps = {
@@ -743,11 +743,11 @@ PivotData.defaultProps = {
     cols: [],
     rows: [],
     vals: [],
-    aggregatorName: "Count",
+    aggregatorName: 'Count',
     sorters: {},
     valueFilter: {},
-    rowOrder: "key_a_to_z",
-    colOrder: "key_a_to_z",
+    rowOrder: 'key_a_to_z',
+    colOrder: 'key_a_to_z',
     derivedAttributes: {},
     grouping: false,
     rowGroupBefore: true,
