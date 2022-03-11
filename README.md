@@ -38,8 +38,6 @@ maintains essentially no state of its own.
 ```svelte
 <script>
     import PivotTableUI from "svelte-pivottable/PivotTableUI";
-    import "react-pivottable/pivottable.css";
-    import "react-pivottable/grouping.css";
 
     const options = {
         // see documenation for supporte options
@@ -50,11 +48,9 @@ maintains essentially no state of its own.
         ["attribute", "attribute2"],
         ["value1", "value2"],
     ];
-
-    options.data = data;
 </script>
 
-<PivotTableUI {...options}>
+<PivotTableUI {...options} {data}>
 ```
 
 ### Drag'n'drop UI with Plotly charts as well as Table output
@@ -75,25 +71,23 @@ To add the Plotly renderers to your app, you can use the following pattern:
 
 ```js
 <script>
-import PivotTableUI from "svelte-pivottable/PivotTableUI";
-import "react-pivottable/pivottable.css";
-import "react-pivottable/grouping.css";
-import TableRenderers from "svelte-pivottable/TableRenderers";
-import Plot from "react-plotly.js";
-import createPlotlyRenderers from "svelte-pivottable/PlotlyRenderers";
+    import PivotTableUI from "svelte-pivottable/PivotTableUI";
+    import TableRenderers from "svelte-pivottable/TableRenderers";
+    import Plot from "react-plotly.js";
+    import PlotlyRenderers from "svelte-pivottable/PlotlyRenderers";
 
-// create Plotly renderers via dependency injection
-const PlotlyRenderers = createPlotlyRenderers(Plot);
+    // create Plotly renderers via dependency injection
+    const plotlyRenderers = PlotlyRenderers(Plotly);
 
-// see documentation for supported input formats
-const data = [
-    ["attribute", "attribute2"],
-    ["value1", "value2"],
-];
+    // see documentation for supported input formats
+    const data = [
+        ["attribute", "attribute2"],
+        ["value1", "value2"],
+    ];
 </script>
 <PivotTableUI
     data={data}
-    renderers={Object.assign({}, TableRenderers, PlotlyRenderers)}
+    renderers={Object.assign({}, TableRenderers, plotlyRenderers)}
 />
 ```
 
@@ -106,17 +100,11 @@ peer-dependcy warning and handle the dependency injection like this:
 ```js
 <script>
     import PivotTableUI from "react-pivottable/PivotTableUI";
-    import "react-pivottable/pivottable.css";
-    import "react-pivottable/grouping.css";
     import TableRenderers from "react-pivottable/TableRenderers";
-    import createPlotlyComponent from "react-plotly.js/factory";
-    import createPlotlyRenderers from "react-pivottable/PlotlyRenderers";
-
-    // create Plotly React component via dependency injection
-    const Plot = createPlotlyComponent(window.Plotly);
+    import PlotlyRenderers from "svelte-pivottable/PlotlyRenderers";
 
     // create Plotly renderers via dependency injection
-    const PlotlyRenderers = createPlotlyRenderers(Plot);
+    const plotlyRenderers = PlotlyRenderers(window.Plotly);
 
     // see documentation for supported input formats
     const data = [
@@ -127,7 +115,7 @@ peer-dependcy warning and handle the dependency injection like this:
 
 <PivotTableUI
     data={data}
-    renderers={Object.assign({}, TableRenderers, PlotlyRenderers)}
+    renderers={...TableRenderers, ...plotlyRenderers)}
 />
 ```
 
