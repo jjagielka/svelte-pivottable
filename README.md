@@ -55,8 +55,7 @@ maintains essentially no state of its own.
 
 ### Drag'n'drop UI with Plotly charts as well as Table output
 
-The Plotly `react-plotly.js` component can be passed in via dependency
-injection. It has a peer dependency on `plotly.js`.
+The Plotly `plotly.js` component can be passed in via dependency injection. 
 
 **Important:** If you build your project using webpack, you'll have to follow
 [these instructions](https://github.com/plotly/plotly.js#building-plotlyjs-with-webpack)
@@ -99,8 +98,8 @@ your app via something like `<script>` tag, you can handle the dependency inject
 
 ```svelte
 <script>
-    import { PivotTableUI } from "react-pivottable/PivotTableUI";
-    import TableRenderers from "react-pivottable/TableRenderers";
+    import { PivotTableUI } from "svelte-pivottable/PivotTableUI";
+    import TableRenderers from "svelte-pivottable/TableRenderers";
     import PlotlyRenderers from "svelte-pivottable/PlotlyRenderers";
 
     // create Plotly renderers via dependency injection
