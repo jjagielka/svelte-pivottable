@@ -64,7 +64,7 @@ in order to successfully bundle `plotly.js`. See below for how to avoid having
 to bundle `plotly.js`.
 
 ```
-npm install --save react-pivottable react-plotly.js plotly.js react react-dom
+npm install --save plotly.js
 ```
 
 To add the Plotly renderers to your app, you can use the following pattern:
@@ -73,7 +73,7 @@ To add the Plotly renderers to your app, you can use the following pattern:
 <script>
     import { PivotTableUI } from "svelte-pivottable/PivotTableUI";
     import TableRenderers from "svelte-pivottable/TableRenderers";
-    import Plot from "react-plotly.js";
+    import Plotly from "plotly.js";
     import PlotlyRenderers from "svelte-pivottable/PlotlyRenderers";
 
     // create Plotly renderers via dependency injection
@@ -95,8 +95,7 @@ To add the Plotly renderers to your app, you can use the following pattern:
 #### With external `plotly.js`
 
 If you would rather not install and bundle `plotly.js` but rather get it into
-your app via something like `<script>` tag, you can ignore `react-plotly.js`'
-peer-dependcy warning and handle the dependency injection like this:
+your app via something like `<script>` tag, you can handle the dependency injection like this:
 
 ```svelte
 <script>
@@ -127,13 +126,13 @@ peer-dependcy warning and handle the dependency injection like this:
         -   `<Renderer {...props} />`
             -   `PivotData(props)`
 
-The interactive component provided by `react-pivottable` is `PivotTableUI`, but
+The interactive component provided by `svelte-pivottable` is `PivotTableUI`, but
 output rendering is delegated to the non-interactive `PivotTable` component,
 which accepts a subset of its properties. `PivotTable` can be invoked directly
 and is useful for outputting non-interactive saved snapshots of `PivotTableUI`
 configurations. `PivotTable` in turn delegates to a specific renderer component,
 such as the default `TableRenderer`, which accepts a subset of the same
-properties. Finally, most renderers will create non-React `PivotData` object to
+properties. Finally, most renderers will create `PivotData` object to
 handle the actual computations, which also accepts a subset of the same props as
 the rest of the stack.
 
