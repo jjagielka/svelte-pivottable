@@ -1,11 +1,13 @@
 <script>
-    import { PivotData } from './Utilities';
-    import { onMount } from 'svelte';
+    import { PivotData } from "./Utilities";
+    import { onMount } from "svelte";
 
-    export let options;
+    let options;
 
     let pivotData, rowKeys, colKeys, headerRow, value;
     $: {
+        options = $$props;
+
         pivotData = new PivotData(options);
         rowKeys = pivotData.getRowKeys();
         colKeys = pivotData.getColKeys();
@@ -20,28 +22,28 @@
         if (colKeys.length === 1 && colKeys[0].length === 0) {
             headerRow.push(options.aggregatorName);
         } else {
-            colKeys.map((c) => headerRow.push(c.join('-')));
+            colKeys.map((c) => headerRow.push(c.join("-")));
         }
 
         const result = rowKeys.map((r) => {
             const row = r.map((x) => x);
             colKeys.map((c) => {
                 const v = pivotData.getAggregator(r, c).value();
-                row.push(v ? v : '');
+                row.push(v ? v : "");
             });
             return row;
         });
 
         result.unshift(headerRow);
 
-        value = result.map((r) => r.join('\t')).join('\n');
+        value = result.map((r) => r.join("\t")).join("\n");
     }
     // style={{ width: window.innerWidth / 2, height: window.innerHeight / 2 }}
 
     let node;
     onMount(() => {
-        node.style.width = node.parentElement.clientWidth + 'px';
-        node.style.height = node.parentElement.clientHeight + 'px';
+        node.style.width = node.parentElement.clientWidth + "px";
+        node.style.height = node.parentElement.clientHeight + "px";
     });
 </script>
 
