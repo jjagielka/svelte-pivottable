@@ -1,6 +1,6 @@
 <script>
-    import { clickOutside } from './utils';
-    import { createEventDispatcher } from 'svelte';
+    import { clickOutside } from "./utils";
+    import { createEventDispatcher } from "svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -12,29 +12,30 @@
 </script>
 
 <div class="pvtDropdown" use:clickOutside on:outside={() => (open = false)}>
-    <div
+    <button
         on:click|stopPropagation={toggle}
-        class={'pvtDropdownValue pvtDropdownCurrent ' + (open ? 'pvtDropdownCurrentOpen' : '')}
-        role="button"
+        class={"pvtDropdownValue pvtDropdownCurrent " + (open ? "pvtDropdownCurrentOpen" : "")}
     >
-        <div class="pvtDropdownIcon">{open ? '×' : '▾'}</div>
+        <div class="pvtDropdownIcon">{open ? "×" : "▾"}</div>
         {#if current}
             {current}
         {:else}
             <span>&nbsp;</span>
         {/if}
-    </div>
+    </button>
 
     {#if open}
         <div class="pvtDropdownMenu" style="z-index: 100;">
             {#each values as r (r)}
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <div
                     role="button"
                     on:click|stopPropagation={() => {
-                        if (current !== r) dispatch('change', (current = r));
+                        if (current !== r) dispatch("change", (current = r));
                         toggle();
                     }}
-                    class={'pvtDropdownValue ' + (r === current ? 'pvtDropdownActiveValue' : '')}
+                    class="pvtDropdownValue"
+                    class:pvtDropdownActiveValue={r === current}
                 >
                     {r}
                 </div>

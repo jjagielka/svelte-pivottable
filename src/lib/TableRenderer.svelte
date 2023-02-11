@@ -1,7 +1,7 @@
 <script>
-    import { PivotData } from './Utilities';
-    import './pivottable.css';
-    import './grouping.css';
+    import { PivotData } from "./Utilities";
+    import "./pivottable.css";
+    import "./grouping.css";
 
     export let tableColorScaleGenerator = redColorScaleGenerator;
     export let tableOptions = {};
@@ -81,9 +81,9 @@
 
     let rowKeys;
     let colKeys;
-    let valueCellColors = (r, c, v) => '';
-    let rowTotalColors = (r, c, v) => '';
-    let colTotalColors = (v) => '';
+    let valueCellColors = (r, c, v) => "";
+    let rowTotalColors = (r, c, v) => "";
+    let colTotalColors = (v) => "";
 
     $: {
         rowKeys = pivotData.getRowKeys(true);
@@ -104,21 +104,21 @@
             const colTotalValues = rowKeys.map((x) => pivotData.getAggregator(x, []).value());
             colTotalColors = colorScaleGenerator(colTotalValues);
 
-            if (opts.heatmapMode === 'full') {
+            if (opts.heatmapMode === "full") {
                 const allValues = [];
                 rowKeys.map((r) =>
                     colKeys.map((c) => allValues.push(pivotData.getAggregator(r, c).value()))
                 );
                 const colorScale = colorScaleGenerator(allValues);
                 valueCellColors = (r, c, v) => colorScale(v);
-            } else if (opts.heatmapMode === 'row') {
+            } else if (opts.heatmapMode === "row") {
                 const rowColorScales = {};
                 rowKeys.map((r) => {
                     const rowValues = colKeys.map((x) => pivotData.getAggregator(r, x).value());
                     rowColorScales[r] = colorScaleGenerator(rowValues);
                 });
                 valueCellColors = (r, c, v) => rowColorScales[r](v);
-            } else if (opts.heatmapMode === 'col') {
+            } else if (opts.heatmapMode === "col") {
                 const colColorScales = {};
                 colKeys.map((c) => {
                     const colValues = rowKeys.map((x) => pivotData.getAggregator(x, c).value());
@@ -150,9 +150,9 @@
             : null;
 
     let rbClass, cbClass, clickClass;
-    $: rbClass = grouping ? (pivotData.props.rowGroupBefore ? 'rowGroupBefore' : 'rowGroupAfter') : '';
-    $: cbClass = grouping ? (pivotData.props.colGroupBefore ? 'colGroupBefore' : 'colGroupAfter') : '';
-    $: clickClass = (pred, closed) => (pred ? ' pvtClickable' + (closed ? ' closed' : '') : '');
+    $: rbClass = grouping ? (pivotData.props.rowGroupBefore ? "rowGroupBefore" : "rowGroupAfter") : "";
+    $: cbClass = grouping ? (pivotData.props.colGroupBefore ? "colGroupBefore" : "colGroupAfter") : "";
+    $: clickClass = (pred, closed) => (pred ? " pvtClickable" + (closed ? " closed" : "") : "");
 </script>
 
 <table class={`pvtTable ${rbClass} ${cbClass}`}>
@@ -166,7 +166,7 @@
                 {/if}
 
                 <th
-                    class={'pvtAxisLabel' + clickClass(clickable, isFolded(levelKeys))}
+                    class={"pvtAxisLabel" + clickClass(clickable, isFolded(levelKeys))}
                     on:click={clickable ? (_) => fold(levelKeys) : null}
                 >
                     {c}
@@ -175,13 +175,13 @@
                     {@const xx = spanSize(colKeys, i, j)}
                     {#if xx !== -1}
                         <th
-                            class={'pvtColLabel' +
+                            class={"pvtColLabel" +
                                 clickClass(clickable && colKey[j], isFolded([colKey.slice(0, j + 1)]))}
                             colSpan={xx}
                             rowSpan={j === colAttrs.length - 1 && rowAttrs.length !== 0 ? 2 : 1}
                             on:click={clickable && colKey[j] ? (_) => fold([colKey.slice(0, j + 1)]) : null}
                         >
-                            {colKey[j] ?? ''}
+                            {colKey[j] ?? ""}
                         </th>
                     {/if}
                 {/each}
@@ -201,14 +201,14 @@
                     {@const levelKeys = rowKeys.filter((x) => x.length === i + 1)}
 
                     <th
-                        class={'pvtAxisLabel' + clickClass(clickable, isFolded(levelKeys))}
+                        class={"pvtAxisLabel" + clickClass(clickable, isFolded(levelKeys))}
                         on:click={clickable ? (_) => fold(levelKeys) : null}
                     >
                         {r}
                     </th>
                 {/each}
                 <th class="pvtTotalLabel">
-                    {colAttrs.length === 0 ? 'Totals' : ''}
+                    {colAttrs.length === 0 ? "Totals" : ""}
                 </th>
             </tr>
         {/if}
@@ -219,13 +219,13 @@
             {@const totalAggregator = pivotData.getAggregator(rowKey, [])}
             {@const rowGap = rowAttrs.length - rowKey.length}
 
-            <tr class={rowGap ? 'pvtLevel' + rowGap : 'pvtData'}>
+            <tr class={rowGap ? "pvtLevel" + rowGap : "pvtData"}>
                 {#each rowKey as txt, j (`rowKeyLabel${i}-${j}`)}
                     {@const clickable = grouping && rowAttrs.length > j + 1}
                     {@const xx = useCompactRows ? 1 : spanSize(rowKeys, i, j, specialCase)}
                     {#if !((useCompactRows && j < rowKey.length - 1) || xx === -1)}
                         <th
-                            class={'pvtRowLabel' +
+                            class={"pvtRowLabel" +
                                 clickClass(clickable && rowKey[j], isFolded([rowKey.slice(0, j + 1)]))}
                             rowSpan={xx}
                             colSpan={useCompactRows
@@ -244,21 +244,23 @@
                 {/each}
                 {#if !useCompactRows && rowGap}
                     <th class="pvtRowLabel" colSpan={rowGap + 1}>
-                        {'Total (' + rowKey[rowKey.length - 1] + ')'}
+                        {"Total (" + rowKey[rowKey.length - 1] + ")"}
                     </th>
                 {/if}
 
                 {#each colKeys as colKey, j (`pvtVal${i}-${j}`)}
                     {@const aggregator = pivotData.getAggregator(rowKey, colKey)}
                     {@const colGap = colAttrs.length - colKey.length}
+                    <!-- svelte-ignore a11y-click-events-have-key-events -->
                     <td
-                        class={'pvtVal' + (colGap ? ' pvtLevel' + colGap : '')}
+                        class={"pvtVal" + (colGap ? " pvtLevel" + colGap : "")}
                         on:click={getClickHandler && getClickHandler(aggregator.value(), rowKey, colKey)}
                         style={valueCellColors(rowKey, colKey, aggregator.value())}
                     >
                         {aggregator.format(aggregator.value())}
                     </td>
                 {/each}
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <td
                     class="pvtTotal"
                     on:click={getClickHandler && getClickHandler(totalAggregator.value(), rowKey, [null])}
@@ -276,15 +278,16 @@
             {#each colKeys as colKey, i (`total${i}`)}
                 {@const totalAggregator = pivotData.getAggregator([], colKey)}
                 {@const colGap = colAttrs.length - colKey.length}
-
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <td
-                    class={'pvtTotal' + (colGap ? ' pvtLevel' + colGap : '')}
+                    class={"pvtTotal" + (colGap ? " pvtLevel" + colGap : "")}
                     on:click={getClickHandler && getClickHandler(totalAggregator.value(), [null], colKey)}
                     style={rowTotalColors(totalAggregator.value())}
                 >
                     {totalAggregator.format(totalAggregator.value())}
                 </td>
             {/each}
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
             <td
                 on:click={getClickHandler && getClickHandler(grandTotalAggregator.value(), [null], [null])}
                 class="pvtGrandTotal"

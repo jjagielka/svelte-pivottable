@@ -17,7 +17,7 @@
 <li data-id={name}>
     <span class={`pvtAttr ${is_empty(valueFilter) ? "" : "pvtFilteredAttribute"}`}>
         {name}
-        <span class="pvtTriangle" on:click={toggleOpen}>
+        <span class="pvtTriangle" on:click={toggleOpen} on:keypress={toggleOpen}>
             {" "}
             ▾
         </span>

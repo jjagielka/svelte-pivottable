@@ -12,7 +12,7 @@
     export let valueFilter = {};
     export let menuLimit = 500;
 
-    let zIndex;
+    
     let filterText = "";
 
     let shown;
@@ -53,14 +53,16 @@
             dispatch("change", valueFilter);
         };
     }
+    function init(node) {
+        node.style.zIndex = "" + zIndexGlobal++;
+    }
 </script>
 
 <div
     class="pvtFilterBox"
     style:display="block"
     style:cursor="initial"
-    style:z-index={zIndex ?? zIndexGlobal++}
-    on:click={() => (zIndex = zIndexGlobal++)}
+    use:init
 >
     <span class="pvtCloseX"> × </span>
     <span class="pvtDragHandle">☰</span>
@@ -70,20 +72,19 @@
         <p>
             <input type="text" placeholder="Filter values" class="pvtSearch" bind:value={filterText} />
             <br />
-            <!-- svelte-ignore a11y-missing-attribute -->
-            <a role="button" class="pvtButton" on:click|stopPropagation={select(true)}>
+            <button class="pvtButton" on:click|stopPropagation={select(true)}>
                 Select {values.length === shown.length ? "All" : shown.length}
-            </a>{" "}
-            <!-- svelte-ignore a11y-missing-attribute -->
-            <a role="button" class="pvtButton" on:click|stopPropagation={select(false)}>
+            </button>{" "}
+            <button class="pvtButton" on:click|stopPropagation={select(false)}>
                 Deselect {values.length === shown.length ? "All" : shown.length}
-            </a>
+            </button>
         </p>
 
         <div class="pvtCheckContainer">
             {#each shown as x (x)}
-                <p on:click={() => toggleValue(x)} class={x in valueFilter ? "" : "selected"}>
+                <p on:click={() => toggleValue(x)} on:keypress class={x in valueFilter ? "" : "selected"}>
                     <!-- svelte-ignore a11y-missing-attribute -->
+                    <!-- svelte-ignore a11y-click-events-have-key-events -->
                     <a class="pvtOnly" on:click|stopPropagation={() => selectOnly(x)}> only </a>
                     <span class="pvtOnlySpacer">&nbsp;</span>
 
