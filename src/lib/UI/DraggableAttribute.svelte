@@ -1,7 +1,6 @@
 <script>
     import Draggable from "./Draggable.svelte";
     import FilterBox from "./FilterBox.svelte";
-    import { is_empty } from "svelte/internal";
 
     export let valueFilter;
     export let name;
@@ -10,6 +9,10 @@
     export let updateValuesInFilter;
 
     let open = false;
+
+    function is_empty(obj) {
+        return Object.keys(obj).length === 0;
+    }
 
     const toggleOpen = () => (open = !open);
 </script>
