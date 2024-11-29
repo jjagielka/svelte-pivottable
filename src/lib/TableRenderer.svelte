@@ -98,30 +98,33 @@
         }
 
         if (opts.heatmapMode) {
+            const dataRowKeys = pivotData.getRowKeys(false);
+            const dataColKeys = pivotData.getColKeys(false);
+
             const colorScaleGenerator = tableColorScaleGenerator;
-            const rowTotalValues = colKeys.map((x) => pivotData.getAggregator([], x).value());
+            const rowTotalValues = dataColKeys.map((x) => pivotData.getAggregator([], x).value());
             rowTotalColors = colorScaleGenerator(rowTotalValues);
-            const colTotalValues = rowKeys.map((x) => pivotData.getAggregator(x, []).value());
+            const colTotalValues = dataRowKeys.map((x) => pivotData.getAggregator(x, []).value());
             colTotalColors = colorScaleGenerator(colTotalValues);
 
             if (opts.heatmapMode === "full") {
                 const allValues = [];
-                rowKeys.map((r) =>
-                    colKeys.map((c) => allValues.push(pivotData.getAggregator(r, c).value()))
+                dataRowKeys.forEach((r) =>
+                    dataColKeys.forEach((c) => allValues.push(pivotData.getAggregator(r, c).value()))
                 );
                 const colorScale = colorScaleGenerator(allValues);
                 valueCellColors = (r, c, v) => colorScale(v);
             } else if (opts.heatmapMode === "row") {
                 const rowColorScales = {};
-                rowKeys.map((r) => {
-                    const rowValues = colKeys.map((x) => pivotData.getAggregator(r, x).value());
+                dataRowKeys.forEach((r) => {
+                    const rowValues = dataColKeys.map((x) => pivotData.getAggregator(r, x).value());
                     rowColorScales[r] = colorScaleGenerator(rowValues);
                 });
                 valueCellColors = (r, c, v) => rowColorScales[r](v);
             } else if (opts.heatmapMode === "col") {
                 const colColorScales = {};
-                colKeys.map((c) => {
-                    const colValues = rowKeys.map((x) => pivotData.getAggregator(x, c).value());
+                dataColKeys.forEach((c) => {
+                    const colValues = dataRowKeys.map((x) => pivotData.getAggregator(x, c).value());
                     colColorScales[c] = colorScaleGenerator(colValues);
                 });
                 valueCellColors = (r, c, v) => colColorScales[c](v);
@@ -255,7 +258,7 @@
                     <td
                         class={"pvtVal" + (colGap ? " pvtLevel" + colGap : "")}
                         on:click={getClickHandler && getClickHandler(aggregator.value(), rowKey, colKey)}
-                        style={valueCellColors(rowKey, colKey, aggregator.value())}
+                        style={colGap || rowGap ? "": valueCellColors(rowKey, colKey, aggregator.value())}
                     >
                         {aggregator.format(aggregator.value())}
                     </td>
