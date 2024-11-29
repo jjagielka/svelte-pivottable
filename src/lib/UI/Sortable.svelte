@@ -1,7 +1,3 @@
-<script context="module">
-    // your script goes here
-</script>
-
 <script>
     import Sortable from 'sortablejs';
     import { createEventDispatcher } from 'svelte';

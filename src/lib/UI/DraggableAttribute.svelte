@@ -10,15 +10,13 @@
 
     let open = false;
 
-    function is_empty(obj) {
-        return Object.keys(obj).length === 0;
-    }
+    $: is_empty = valueFilter ? Object.keys(valueFilter).length === 0 : true;
 
     const toggleOpen = () => (open = !open);
 </script>
 
 <li data-id={name}>
-    <span class={`pvtAttr ${is_empty(valueFilter) ? "" : "pvtFilteredAttribute"}`}>
+    <span class={`pvtAttr ${is_empty ? "" : "pvtFilteredAttribute"}`}>
         {name}
         <span class="pvtTriangle" on:click={toggleOpen} on:keypress={toggleOpen}>
             {" "}

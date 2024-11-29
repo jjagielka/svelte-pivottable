@@ -36,6 +36,7 @@
                     }}
                     class="pvtDropdownValue"
                     class:pvtDropdownActiveValue={r === current}
+                    tabindex=0
                 >
                     {r}
                 </div>
