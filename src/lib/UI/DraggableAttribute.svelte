@@ -3,15 +3,16 @@
     import FilterBox from "./FilterBox.svelte";
 
     let { valueFilter, name, attrValues, menuLimit, updateValuesInFilter } = $props();
-    console.log(valueFilter);
-    let open = $state(false);
 
-    let is_empty = $derived(valueFilter ? Object.keys(valueFilter).length === 0 : true);
+    // let open = $state(false);
 
-    const toggleOpen = () => (open = !open);
+    // let is_empty = $derived(valueFilter ? Object.keys(valueFilter).length === 0 : true);
+
+    // const toggleOpen = () => (open = !open);
 </script>
 
-<li data-id={name}>
+<span data-id={name}>{name}</span>
+<!-- <li data-id={name}>
     <span class={`pvtAttr ${is_empty ? "" : "pvtFilteredAttribute"}`}>
         {name}
         <span class="pvtTriangle" onclick={toggleOpen} onkeypress={toggleOpen} role="presentation">
@@ -31,4 +32,4 @@
             />
         </Draggable>
     {/if}
-</li>
+</li> -->

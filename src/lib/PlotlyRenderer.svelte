@@ -1,18 +1,32 @@
-<script>
+<script lang="ts">
     import Plotly from "./UI/Plotly.svelte";
     import PivotData from "./PivotData";
 
-    export let plotlyOptions = {},
+    let {
+        plotlyOptions = {},
         plotlyConfig = {},
-        onRendererUpdate;
+        onRendererUpdate,
 
-    export let traceOptions = {},
+        traceOptions = {},
         layoutOptions = {},
-        transpose = false;
+        transpose = false,
 
-    let pivotData, rowKeys, colKeys, traceKeys, datumKeys, numInputs, data, hAxisTitle, groupByTitle, layout;
-    $: {
-        pivotData = new PivotData($$restProps);
+        ...restProps
+    } = $props();
+
+    let pivotData: PivotData,
+        rowKeys,
+        colKeys,
+        traceKeys,
+        datumKeys,
+        numInputs,
+        data = $state(),
+        hAxisTitle,
+        groupByTitle,
+        layout = $state();
+
+    $effect(() => {
+        pivotData = new PivotData(restProps);
         rowKeys = pivotData.getRowKeys();
         colKeys = pivotData.getColKeys();
         traceKeys = transpose ? colKeys : rowKeys;
@@ -95,7 +109,7 @@
                 automargin: true,
             };
         }
-    }
+    });
 </script>
 
 <Plotly

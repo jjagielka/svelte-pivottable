@@ -12,6 +12,7 @@
     // options = options || {};
 
     function create(node: HTMLElement) {
+        console.log("create", node, node.parentElement, options, items);
         if (!node.parentElement) return;
 
         const sortable = Sortable.create(node.parentElement, {
@@ -24,11 +25,12 @@
         // Temporary node removal
         node.parentElement.removeChild(node);
 
-        return sortable.destroy;
+        return () => sortable?.destroy();
     }
 </script>
 
 <div {@attach create}><!-- Temporary node only for the initialization. --></div>
-{#each items as item (item)}
+{@render children()}
+<!-- {#each items as item (item)}
     {@render children(item)}
-{/each}
+{/each} -->

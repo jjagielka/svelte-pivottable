@@ -2,6 +2,7 @@
     import Sortable from "./Sortable.svelte";
     import DraggableAttribute from "./DraggableAttribute.svelte";
     import { getSort } from "../Utilities";
+    import sortableAttachment from "./SortableAttachment";
 
     let { items, onChange, valueFilter, attrValues, sorters, menuLimit, onUpdate } = $props();
 
@@ -22,17 +23,26 @@
         valueFilter[attribute] = values;
         onUpdate(valueFilter);
     }
-    console.log("DnDCell", items);
 </script>
 
-<Sortable {items} onchange={onChange} {options}>
-    {#snippet children(x: string)}
-        <DraggableAttribute
-            attrValues={getAttrValues(x)}
-            name={x}
-            valueFilter={valueFilter[x] || {}}
-            {menuLimit}
-            {updateValuesInFilter}
-        />
-    {/snippet}
-</Sortable>
+<!-- this is removed after init -->
+<div {@attach sortableAttachment(options, onChange)} hidden></div>
+{#each items as name (name)}
+    {@const is_empty = valueFilter[name] ? Object.keys(valueFilter[name]).length === 0 : true}
+    <li data-id={name}>
+        <span class={`pvtAttr ${is_empty ? "" : "pvtFilteredAttribute"}`}>
+            {name}
+            <span class="pvtTriangle" role="presentation">
+                {" "}
+                ▾
+            </span>
+        </span>
+    </li>
+    <!-- <DraggableAttribute
+        attrValues={getAttrValues(name)}
+        {name}
+        valueFilter={valueFilter[name]}
+        {menuLimit}
+        {updateValuesInFilter}
+    /> -->
+{/each}

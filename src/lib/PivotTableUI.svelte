@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import Aggregators from "./UI/Aggregators.svelte";
     import DnDCell from "./UI/DnDCell.svelte";
     import Dropdown from "./UI/Dropdown.svelte";
@@ -8,7 +8,8 @@
     import TableRenderers from "./TableRenderers";
     import { sortAs, aggregators as defaultAggregators } from "./Utilities";
 
-    export let rendererName = "Table",
+    let {
+        rendererName = "Table",
         renderers = TableRenderers,
         aggregatorName = "Count",
         aggregators = defaultAggregators,
@@ -16,17 +17,26 @@
         hiddenFromAggregators = [],
         hiddenFromDragDrop = [],
         unusedOrientationCutoff = 85,
-        menuLimit = 500;
+        menuLimit = 500,
 
-    // pivotData props managed by PivotTableUI
-    export let { derivedAttributes, cols, rows, vals, sorters, valueFilter } = PivotData.defaultProps;
+        // pivotData props managed by PivotTableUI
+        derivedAttributes = PivotData.defaultProps.derivedAttributes,
+        cols = PivotData.defaultProps.cols,
+        rows = PivotData.defaultProps.rows,
+        vals = PivotData.defaultProps.vals,
+        sorters = PivotData.defaultProps.sorters,
+        valueFilter = PivotData.defaultProps.valueFilter,
 
-    export let data;
+        // pivot data
+        data,
+
+        ...restProps
+    } = $props();
 
     let unusedOrder = [],
         attrValues = {};
 
-    $: {
+    $effect(() => {
         attrValues = {};
 
         let recordsProcessed = 0;
@@ -49,18 +59,18 @@
             }
             recordsProcessed++;
         });
-    }
+    });
 
-    function notHidden(e) {
-        return !hiddenAttributes.includes(e) && !hiddenFromDragDrop.includes(e);
-    }
+    const notHidden = (e: string) => !hiddenAttributes.includes(e) && !hiddenFromDragDrop.includes(e);
 
-    let colAttrs, rowAttrs;
-    $: colAttrs = cols.filter(notHidden);
-    $: rowAttrs = rows.filter(notHidden);
+    let colAttrs = $derived(cols.filter(notHidden));
+    let rowAttrs = $derived(rows.filter(notHidden));
 
-    let unusedAttrs, horizUnused, valAttrs;
-    $: {
+    let unusedAttrs,
+        horizUnused = $state(),
+        valAttrs;
+
+    $effect(() => {
         unusedAttrs = Object.keys(attrValues)
             .filter((e) => !colAttrs.includes(e) && !rowAttrs.includes(e) && notHidden(e))
             .sort(sortAs(unusedOrder));
@@ -71,18 +81,19 @@
         valAttrs = Object.keys(attrValues).filter(
             (e) => !hiddenAttributes.includes(e) && !hiddenFromAggregators.includes(e),
         );
-    }
+    });
 
-    let renderer;
-    $: {
-        rendererName = rendererName in renderers ? rendererName : Object.keys(renderers)[0];
-        renderer = renderers[rendererName];
-    }
-    let aggregator;
-    $: {
-        aggregatorName = aggregatorName in aggregators ? aggregatorName : Object.keys(aggregators)[0];
-        aggregator = aggregators[aggregatorName];
-    }
+    const firstKey = (x: object) => Object.keys(x)[0];
+
+    let renderer = $derived(
+        renderers[(rendererName in renderers ? rendererName : firstKey(renderers)) as keyof typeof renderers],
+    );
+
+    let aggregator = $derived(
+        aggregators[
+            (aggregatorName in aggregators ? aggregatorName : firstKey(aggregators)) as keyof typeof aggregators
+        ],
+    );
 </script>
 
 <MainTable {horizUnused}>
@@ -119,7 +130,7 @@
             {valueFilter}
             {attrValues}
             items={colAttrs}
-            onChange={(v) => (console.log(v), (cols = v))}
+            onChange={(v) => (cols = v)}
             onUpdate={(v) => (valueFilter = v)}
             {menuLimit}
         />
@@ -140,7 +151,7 @@
     {#snippet outputCell()}
         <PivotTable
             {renderer}
-            {...$$restProps}
+            {...restProps}
             {cols}
             {rows}
             {vals}

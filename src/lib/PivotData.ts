@@ -1,4 +1,4 @@
-import { aggregators, getSort } from "./Utilities";
+import { aggregators, getSort, naturalSort } from "./Utilities";
 
 // [1,2,3] -> [[1], [1,2], [1,2,3]]
 const subarrays = <T>(array: T[]) => array.map((d, i) => array.slice(0, i + 1));
@@ -24,13 +24,17 @@ class PivotData {
         grouping: false,
         rowGroupBefore: true,
         colGroupBefore: false,
+        aggregator: aggregators["Count as Fraction of Columns"],
+        data: []
     }
 
     props: typeof PivotData.defaultProps;
     rowKeys: string[][];
     colKeys: string[][];
+    tree: Record<string, Record<string, any[]>>;
     rowTotals: Record<string, any>;
     colTotals: Record<string, any>;
+    allTotal: any[];
     sorted: boolean;
     aggregator: typeof aggregators["Average"];
 
@@ -193,7 +197,7 @@ class PivotData {
         }
     }
 
-    getAggregator(rowKey, colKey) {
+    getAggregator(rowKey: string[], colKey: string[]) {
         let agg;
         const flatRowKey = rowKey.join(String.fromCharCode(0));
         const flatColKey = colKey.join(String.fromCharCode(0));
@@ -225,7 +229,7 @@ class PivotData {
         if (Object.getOwnPropertyNames(derivedAttributes).length === 0) {
             addRecord = f;
         } else {
-            addRecord = function (record) {
+            addRecord = function (record: Record<string, number>) {
                 for (const k in derivedAttributes) {
                     const derived = derivedAttributes[k](record);
                     if (derived !== null) {

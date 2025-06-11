@@ -12,9 +12,8 @@
 </script>
 
 <script lang="ts">
-    let { data, layout, config } = $props();
-
-    export const onUpdate = () => {}; // TODO: connect to plotly events
+    // export const onUpdate = () => {}; // TODO: connect to plotly events
+    let { data, layout, config, onUpdate } = $props();
 
     function create(node: HTMLElement) {
         Plotly?.newPlot(node, { data, layout, config });

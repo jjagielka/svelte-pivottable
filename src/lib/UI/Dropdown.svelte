@@ -1,7 +1,7 @@
 <script>
     import { clickOutside } from "./utils";
 
-    let { current = $bindable(), values = [], onchange } = $props();
+    let { current = $bindable(), values = [], onchange = undefined } = $props();
 
     let open = $state(false);
     const toggle = () => (open = !open);
