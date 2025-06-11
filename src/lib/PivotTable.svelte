@@ -1,7 +1,7 @@
 <script>
-    import TableRenderers from './TableRenderers';
+    import TableRenderers from "./TableRenderers";
 
-    export let renderer = TableRenderers.Table;
+    let { renderer: Renderer = TableRenderers.Table, ...restProps } = $props();
 </script>
 
-<svelte:component this={renderer} {...$$restProps} />
+<Renderer {...restProps} />

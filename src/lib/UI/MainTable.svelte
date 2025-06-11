@@ -1,21 +1,22 @@
 <script>
-    export let horizUnused;
+    let { horizUnused, rendererCell, aggregatorCell, outputCell, unusedAttrsCell, colAttrsCell, rowAttrsCell } =
+        $props();
 </script>
 
 {#if horizUnused}
     <table class="pvtUi">
         <tbody>
             <tr>
-                <td class="pvtRenderers"><slot name="rendererCell" /></td>
-                <td class="pvtAxisContainer pvtUnused pvtHorizList"><slot name="unusedAttrsCell" /></td>
+                <td class="pvtRenderers">{@render rendererCell()}</td>
+                <td class="pvtAxisContainer pvtUnused pvtHorizList">{@render unusedAttrsCell()}</td>
             </tr>
             <tr>
-                <td class="pvtVals"><slot name="aggregatorCell" /></td>
-                <td class="pvtAxisContainer pvtHorizList pvtCols"><slot name="colAttrsCell" /></td>
+                <td class="pvtVals">{@render aggregatorCell()}</td>
+                <td class="pvtAxisContainer pvtHorizList pvtCols">{@render colAttrsCell()}</td>
             </tr>
             <tr>
-                <td class="pvtAxisContainer pvtVertList pvtRows"><slot name="rowAttrsCell" /></td>
-                <td class="pvtOutput"><slot name="outputCell" /></td>
+                <td class="pvtAxisContainer pvtVertList pvtRows">{@render rowAttrsCell()}</td>
+                <td class="pvtOutput">{@render outputCell()}</td>
             </tr>
         </tbody>
     </table>
@@ -23,14 +24,14 @@
     <table class="pvtUi">
         <tbody>
             <tr>
-                <td class="pvtRenderers"><slot name="rendererCell" /></td>
-                <td class="pvtVals"><slot name="aggregatorCell" /></td>
-                <td class="pvtAxisContainer pvtHorizList pvtCols"><slot name="colAttrsCell" /></td>
+                <td class="pvtRenderers">{@render rendererCell()}</td>
+                <td class="pvtVals">{@render aggregatorCell()}</td>
+                <td class="pvtAxisContainer pvtHorizList pvtCols">{@render colAttrsCell()}</td>
             </tr>
             <tr>
-                <td class="pvtAxisContainer pvtUnused pvtVertList"><slot name="unusedAttrsCell" /></td>
-                <td class="pvtAxisContainer pvtVertList pvtRows"><slot name="rowAttrsCell" /></td>
-                <td class="pvtOutput"><slot name="outputCell" /></td>
+                <td class="pvtAxisContainer pvtUnused pvtVertList">{@render unusedAttrsCell()}</td>
+                <td class="pvtAxisContainer pvtVertList pvtRows">{@render rowAttrsCell()}</td>
+                <td class="pvtOutput">{@render outputCell()}</td>
             </tr>
         </tbody>
     </table>

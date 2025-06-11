@@ -1,15 +1,16 @@
 <script>
-    import Aggregators from './UI/Aggregators.svelte';
-    import DnDCell from './UI/DnDCell.svelte';
-    import Dropdown from './UI/Dropdown.svelte';
-    import MainTable from './UI/MainTable.svelte';
-    import PivotTable from './PivotTable.svelte';
-    import TableRenderers from './TableRenderers';
-    import { PivotData, sortAs, aggregators as defaultAggregators } from './Utilities';
+    import Aggregators from "./UI/Aggregators.svelte";
+    import DnDCell from "./UI/DnDCell.svelte";
+    import Dropdown from "./UI/Dropdown.svelte";
+    import MainTable from "./UI/MainTable.svelte";
+    import PivotTable from "./PivotTable.svelte";
+    import PivotData from "./PivotData";
+    import TableRenderers from "./TableRenderers";
+    import { sortAs, aggregators as defaultAggregators } from "./Utilities";
 
-    export let rendererName = 'Table',
+    export let rendererName = "Table",
         renderers = TableRenderers,
-        aggregatorName = 'Count',
+        aggregatorName = "Count",
         aggregators = defaultAggregators,
         hiddenAttributes = [],
         hiddenFromAggregators = [],
@@ -40,7 +41,7 @@
                 }
             }
             for (const attr in attrValues) {
-                const value = attr in record ? record[attr] : 'null';
+                const value = attr in record ? record[attr] : "null";
                 if (!(value in attrValues[attr])) {
                     attrValues[attr][value] = 0;
                 }
@@ -68,7 +69,7 @@
         horizUnused = unusedLength < unusedOrientationCutoff;
 
         valAttrs = Object.keys(attrValues).filter(
-            (e) => !hiddenAttributes.includes(e) && !hiddenFromAggregators.includes(e)
+            (e) => !hiddenAttributes.includes(e) && !hiddenFromAggregators.includes(e),
         );
     }
 
@@ -85,62 +86,69 @@
 </script>
 
 <MainTable {horizUnused}>
-    <Dropdown slot="rendererCell" bind:current={rendererName} values={Object.keys(renderers)} />
+    {#snippet rendererCell()}
+        <Dropdown bind:current={rendererName} values={Object.keys(renderers)} />
+    {/snippet}
 
-    <Aggregators
-        slot="aggregatorCell"
-        {aggregatorName}
-        {aggregators}
-        {valAttrs}
-        onChange={(v) => (aggregatorName = v)}
-        onUpdate={(v) => (vals = v)}
-        {vals}
-    />
+    {#snippet aggregatorCell()}
+        <Aggregators
+            {aggregatorName}
+            {aggregators}
+            {valAttrs}
+            onChange={(v) => (aggregatorName = v)}
+            onUpdate={(v) => (vals = v)}
+            {vals}
+        />
+    {/snippet}
 
-    <DnDCell
-        slot="unusedAttrsCell"
-        {sorters}
-        {valueFilter}
-        {attrValues}
-        items={unusedAttrs}
-        onChange={(order) => (unusedOrder = order)}
-        onUpdate={(v) => (valueFilter = v)}
-        {menuLimit}
-    />
+    {#snippet unusedAttrsCell()}
+        <DnDCell
+            {sorters}
+            {valueFilter}
+            {attrValues}
+            items={unusedAttrs}
+            onChange={(order) => (unusedOrder = order)}
+            onUpdate={(v) => (valueFilter = v)}
+            {menuLimit}
+        />
+    {/snippet}
 
-    <DnDCell
-        slot="colAttrsCell"
-        {sorters}
-        {valueFilter}
-        {attrValues}
-        items={colAttrs}
-        onChange={(v) => (cols = v)}
-        onUpdate={(v) => (valueFilter = v)}
-        {menuLimit}
-    />
+    {#snippet colAttrsCell()}
+        <DnDCell
+            {sorters}
+            {valueFilter}
+            {attrValues}
+            items={colAttrs}
+            onChange={(v) => (console.log(v), (cols = v))}
+            onUpdate={(v) => (valueFilter = v)}
+            {menuLimit}
+        />
+    {/snippet}
 
-    <DnDCell
-        slot="rowAttrsCell"
-        {sorters}
-        {valueFilter}
-        {attrValues}
-        items={rowAttrs}
-        onChange={(v) => (rows = v)}
-        onUpdate={(v) => (valueFilter = v)}
-        {menuLimit}
-    />
+    {#snippet rowAttrsCell()}
+        <DnDCell
+            {sorters}
+            {valueFilter}
+            {attrValues}
+            items={rowAttrs}
+            onChange={(v) => (rows = v)}
+            onUpdate={(v) => (valueFilter = v)}
+            {menuLimit}
+        />
+    {/snippet}
 
-    <PivotTable
-        slot="outputCell"
-        {renderer}
-        {...$$restProps}
-        {cols}
-        {rows}
-        {vals}
-        {derivedAttributes}
-        {aggregator}
-        {data}
-        {sorters}
-        {valueFilter}
-    />
+    {#snippet outputCell()}
+        <PivotTable
+            {renderer}
+            {...$$restProps}
+            {cols}
+            {rows}
+            {vals}
+            {derivedAttributes}
+            {aggregator}
+            {data}
+            {sorters}
+            {valueFilter}
+        />
+    {/snippet}
 </MainTable>

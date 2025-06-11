@@ -1,11 +1,16 @@
-<script>
-    import { clickClose } from './utils';
+<script lang="ts">
+    import { clickClose } from "./utils";
 
-    export let handle; // query
-    export let close;
+    let {
+        children,
+        handle, // query
+        close,
+        onclose,
+        onclick,
+    } = $props();
 
-    let left = 0;
-    let top = 0;
+    let left = $state(0);
+    let top = $state(0);
 
     let moving = false;
 
@@ -13,7 +18,7 @@
         moving = true;
     }
 
-    function onMouseMove(e) {
+    function onMouseMove(e: MouseEvent) {
         if (moving) {
             left += e.movementX;
             top += e.movementY;
@@ -24,23 +29,32 @@
         moving = false;
     }
 
-    function init(node) {
+    function init(node: HTMLElement) {
         const handleElem = node.querySelector(handle) ?? node;
-        handleElem.addEventListener('mousedown', onMouseDown, true);
-
+        handleElem.addEventListener("mousedown", onMouseDown, true);
+        console.log("draggable", node, handleElem);
         return {
             destroy() {
-                handleElem.removeEventListener('mousedown', onMouseDown, true);
+                handleElem.removeEventListener("mousedown", onMouseDown, true);
             },
         };
     }
 </script>
 
-<section use:init use:clickClose={close} style="left: {left}px; top: {top}px;" class={'draggable'} on:close>
-    <slot />
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<section
+    use:init
+    use:clickClose={close}
+    style="left: {left}px; top: {top}px;"
+    class={"draggable"}
+    {onclose}
+    {onclick}
+    role="presentation"
+>
+    {@render children()}
 </section>
 
-<svelte:window on:mouseup={onMouseUp} on:mousemove={onMouseMove} />
+<svelte:window onmouseup={onMouseUp} onmousemove={onMouseMove} />
 
 <style>
     .draggable {

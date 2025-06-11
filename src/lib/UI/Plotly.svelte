@@ -1,31 +1,30 @@
-<script context="module">
-    let Plotly;
+<script module lang="ts">
+    interface PlotlyModule {
+        newPlot: (node: HTMLElement, options: any) => void;
+        purge: (node: HTMLElement) => void;
+    }
 
-    export function initPlotly(module) {
+    let Plotly: PlotlyModule | undefined = $state();
+
+    export function initPlotly(module: PlotlyModule) {
         Plotly = module;
     }
 </script>
 
-<script>
-    export let data, layout, config;
+<script lang="ts">
+    let { data, layout, config } = $props();
+
     export const onUpdate = () => {}; // TODO: connect to plotly events
 
-    function create(node, options) {
-        Plotly.newPlot(node, options);
+    function create(node: HTMLElement) {
+        Plotly?.newPlot(node, { data, layout, config });
 
-        return {
-            update(options) {
-                Plotly.newPlot(node, options);
-            },
-            destroy() {
-                Plotly.purge(node);
-            },
-        };
+        return () => Plotly?.purge(node);
     }
 </script>
 
 {#if Plotly}
-    <div use:create={{ data, layout, config }} />
+    <div {@attach create}></div>
 {:else}
     <p>Error! Plotly.js not initialized.</p>
 {/if}

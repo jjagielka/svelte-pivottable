@@ -7,7 +7,7 @@
     import { onMount } from "svelte";
 
     let plotlyRenderers = {};
-    let renderers;
+    let renderers = $state();
 
     onMount(async () => {
         // plotly.js requires an access to window object
@@ -20,10 +20,10 @@
         renderers = { ...TableRenderers, ...plotlyRenderers };
     });
 
-    let grouping = true,
-        compactRows = true,
-        rowGroupBefore = true,
-        colGroupBefore = false;
+    let grouping = $state(true),
+        compactRows = $state(true),
+        rowGroupBefore = $state(true),
+        colGroupBefore = $state(false);
 
     const derivedAttributes = {
         "Age Bin": derivers.bin("Age", 10),
@@ -61,14 +61,14 @@
                 aria-controls="navbar"
             >
                 <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar" />
-                <span class="icon-bar" />
-                <span class="icon-bar" />
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
             </button>
-            <!-- svelte-ignore a11y-invalid-attribute -->
+            <!-- svelte-ignore a11y_invalid_attribute -->
             <a class="navbar-brand" href="#">svelte-pivottable</a>
         </div>
-        <div id="navbar" class="navbar-collapse collapse" />
+        <div id="navbar" class="navbar-collapse collapse"></div>
         <!--/.navbar-collapse -->
     </div>
 </nav>
@@ -79,10 +79,8 @@
         <h1>svelte-pivottable</h1>
         <p>Svelte-based drag'n'drop pivot table with grouping and Plotly.js charts.</p>
         <p>
-            <a
-                class="btn btn-primary btn-lg"
-                href="https://github.com/plotly/svelte-pivottable#readme"
-                role="button">Get started &raquo;</a
+            <a class="btn btn-primary btn-lg" href="https://github.com/plotly/svelte-pivottable#readme" role="button"
+                >Get started &raquo;</a
             >
         </p>
     </div>

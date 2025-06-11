@@ -1,13 +1,15 @@
-<script>
-    import { PivotData } from "./Utilities";
-    import { onMount } from "svelte";
+<script lang="ts">
+    import PivotData from "./PivotData";
 
-    let options;
+    let pivotData: PivotData,
+        rowKeys: string[][],
+        colKeys: string[][],
+        headerRow: string[],
+        value: string = $state("");
 
-    let pivotData, rowKeys, colKeys, headerRow, value;
-    $: {
-        options = $$props;
+    let options = $props();
 
+    $effect(() => {
         pivotData = new PivotData(options);
         rowKeys = pivotData.getRowKeys();
         colKeys = pivotData.getColKeys();
@@ -37,14 +39,13 @@
         result.unshift(headerRow);
 
         value = result.map((r) => r.join("\t")).join("\n");
-    }
+    });
     // style={{ width: window.innerWidth / 2, height: window.innerHeight / 2 }}
 
-    let node;
-    onMount(() => {
-        node.style.width = node.parentElement.clientWidth + "px";
-        node.style.height = node.parentElement.clientHeight + "px";
-    });
+    function resize(node: HTMLElement) {
+        node.style.width = node.parentElement?.clientWidth + "px";
+        node.style.height = node.parentElement?.clientHeight + "px";
+    }
 </script>
 
-<textarea bind:this={node} {value} readOnly={true} />
+<textarea use:resize {value} readOnly={true}></textarea>

@@ -1,19 +1,20 @@
-<script>
-    import Sortable from 'sortablejs';
-    import { createEventDispatcher } from 'svelte';
+<script lang="ts">
+    import Sortable from "sortablejs";
 
-    const dispatch = createEventDispatcher();
-
-    function notify(el) {
-        const val = [...el.children].map((i) => i.dataset.id);
-        dispatch('change', val);
+    function notify(el: Element) {
+        const val = [...el.children].map((i) => (i as HTMLElement).dataset.id);
+        onchange(val);
     }
 
-    export let options = {};
-    export let items = [];
+    let { children, options = {}, items = [], onchange } = $props();
 
-    function create(node) {
-        const sortable = Sortable.create(node.parentNode, {
+    // items = items || [];
+    // options = options || {};
+
+    function create(node: HTMLElement) {
+        if (!node.parentElement) return;
+
+        const sortable = Sortable.create(node.parentElement, {
             ...options,
             onUpdate: (ev) => notify(ev.to),
             onAdd: (ev) => notify(ev.to),
@@ -21,18 +22,13 @@
         });
 
         // Temporary node removal
-        node.parentNode.removeChild(node);
+        node.parentElement.removeChild(node);
 
-        return {
-            update() {},
-            onDestroy() {
-                sortable.destroy();
-            },
-        };
+        return sortable.destroy;
     }
 </script>
 
-<div use:create><!-- Temporary node only for the initialization. --></div>
+<div {@attach create}><!-- Temporary node only for the initialization. --></div>
 {#each items as item (item)}
-    <slot {item} />
+    {@render children(item)}
 {/each}

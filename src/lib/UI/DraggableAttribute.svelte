@@ -1,16 +1,12 @@
-<script>
+<script lang="ts">
     import Draggable from "./Draggable.svelte";
     import FilterBox from "./FilterBox.svelte";
 
-    export let valueFilter;
-    export let name;
-    export let attrValues;
-    export let menuLimit;
-    export let updateValuesInFilter;
+    let { valueFilter, name, attrValues, menuLimit, updateValuesInFilter } = $props();
+    console.log(valueFilter);
+    let open = $state(false);
 
-    let open = false;
-
-    $: is_empty = valueFilter ? Object.keys(valueFilter).length === 0 : true;
+    let is_empty = $derived(valueFilter ? Object.keys(valueFilter).length === 0 : true);
 
     const toggleOpen = () => (open = !open);
 </script>
@@ -18,20 +14,20 @@
 <li data-id={name}>
     <span class={`pvtAttr ${is_empty ? "" : "pvtFilteredAttribute"}`}>
         {name}
-        <span class="pvtTriangle" on:click={toggleOpen} on:keypress={toggleOpen}>
+        <span class="pvtTriangle" onclick={toggleOpen} onkeypress={toggleOpen} role="presentation">
             {" "}
             ▾
         </span>
     </span>
 
     {#if open}
-        <Draggable handle=".pvtDragHandle" close=".pvtCloseX" on:click={toggleOpen} on:close={toggleOpen}>
+        <Draggable handle=".pvtDragHandle" close=".pvtCloseX" onclick={toggleOpen} onclose={toggleOpen}>
             <FilterBox
                 {name}
                 {valueFilter}
                 values={attrValues}
                 {menuLimit}
-                on:change={(ev) => updateValuesInFilter(name, ev.detail)}
+                onchange={(v: any) => updateValuesInFilter(name, v)}
             />
         </Draggable>
     {/if}

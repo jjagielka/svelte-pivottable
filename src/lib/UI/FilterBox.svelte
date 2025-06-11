@@ -1,69 +1,56 @@
-<script context="module">
+<script module>
     let zIndexGlobal = 1000;
 </script>
 
-<script>
-    import { createEventDispatcher } from "svelte";
+<script lang="ts">
+    let { name, values, valueFilter = {}, menuLimit = 500, onchange } = $props();
 
-    const dispatch = createEventDispatcher();
+    let filterText = $state("");
 
-    export let name;
-    export let values;
-    export let valueFilter = {};
-    export let menuLimit = 500;
+    let shown = $derived(values.filter(matchesFilter, filterText)); // filterText only to trigger reactivity
 
-    
-    let filterText = "";
-
-    let shown;
-    $: filterText, (shown = values.filter(matchesFilter));
-
-    function toggleValue(value) {
+    function toggleValue(value: string) {
         value in valueFilter ? removeValuesFromFilter([value]) : addValuesToFilter([value]);
-        dispatch("change", valueFilter);
+        onchange(valueFilter);
     }
 
-    function setValuesInFilter(values) {
+    function setValuesInFilter(values: string[]) {
         Object.keys(valueFilter).forEach((key) => delete valueFilter[key]);
         addValuesToFilter(values);
         // values.forEach((v) => (valueFilter[v] = true));
     }
 
-    function addValuesToFilter(values) {
+    function addValuesToFilter(values: string[]) {
         values.forEach((v) => (valueFilter[v] = true));
     }
 
-    function removeValuesFromFilter(values) {
+    function removeValuesFromFilter(values: string[]) {
         values.forEach((v) => delete valueFilter[v]);
     }
 
-    function matchesFilter(x) {
+    function matchesFilter(x: string) {
         return x.toLowerCase().trim().includes(filterText.toLowerCase().trim());
     }
 
-    function selectOnly(value) {
-        setValuesInFilter(values.filter((y) => y !== value));
-        dispatch("change", valueFilter);
+    function selectOnly(value: string) {
+        setValuesInFilter(values.filter((y: string) => y !== value));
+        onchange(valueFilter);
     }
 
-    function select(all) {
+    function select(all: boolean) {
         const func = all ? removeValuesFromFilter : addValuesToFilter;
-        return function () {
+        return function (ev: MouseEvent) {
+            ev.stopPropagation();
             func(values.filter(matchesFilter));
-            dispatch("change", valueFilter);
+            onchange(valueFilter);
         };
     }
-    function init(node) {
+    function init(node: HTMLElement) {
         node.style.zIndex = "" + zIndexGlobal++;
     }
 </script>
 
-<div
-    class="pvtFilterBox"
-    style:display="block"
-    style:cursor="initial"
-    use:init
->
+<div class="pvtFilterBox" style:display="block" style:cursor="initial" use:init>
     <span class="pvtCloseX"> × </span>
     <span class="pvtDragHandle">☰</span>
     <h4>{name}</h4>
@@ -72,20 +59,22 @@
         <p>
             <input type="text" placeholder="Filter values" class="pvtSearch" bind:value={filterText} />
             <br />
-            <button class="pvtButton" on:click|stopPropagation={select(true)}>
+            <button class="pvtButton" onclick={select(true)}>
                 Select {values.length === shown.length ? "All" : shown.length}
             </button>{" "}
-            <button class="pvtButton" on:click|stopPropagation={select(false)}>
+            <button class="pvtButton" onclick={select(false)}>
                 Deselect {values.length === shown.length ? "All" : shown.length}
             </button>
         </p>
 
         <div class="pvtCheckContainer">
             {#each shown as x (x)}
-                <p on:click={() => toggleValue(x)} on:keypress class={x in valueFilter ? "" : "selected"}>
-                    <!-- svelte-ignore a11y-missing-attribute -->
-                    <!-- svelte-ignore a11y-click-events-have-key-events -->
-                    <a class="pvtOnly" on:click|stopPropagation={() => selectOnly(x)}> only </a>
+                <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+                <!-- svelte-ignore a11y_click_events_have_key_events -->
+                <p onclick={() => toggleValue(x)} class={x in valueFilter ? "" : "selected"}>
+                    <!-- svelte-ignore a11y_missing_attribute -->
+                    <!-- svelte-ignore a11y_click_events_have_key_events -->
+                    <a class="pvtOnly" onclick={() => selectOnly(x)} role="presentation"> only </a>
                     <span class="pvtOnlySpacer">&nbsp;</span>
 
                     {#if x === ""}<em>null</em>{:else}{x}{/if}

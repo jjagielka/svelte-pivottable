@@ -1,16 +1,9 @@
-<script>
+<script lang="ts">
     import Dropdown from "./Dropdown.svelte";
 
-    export let onChange, onUpdate;
-    // export let propUpdater;
+    let { onChange, onUpdate, aggregatorName, aggregators, valAttrs, vals } = $props();
 
-    export let aggregatorName;
-    export let aggregators;
-    export let valAttrs;
-    export let vals;
-
-    let numValsAllowed;
-    $: numValsAllowed = aggregators[aggregatorName]([])().numInputs || 0;
+    let numValsAllowed = $derived(aggregators[aggregatorName]([])().numInputs || 0);
 
     const sortIcons = {
         key_a_to_z: {
@@ -26,16 +19,12 @@
         value_z_to_a: { rowSymbol: "↑", colSymbol: "←", next: "key_a_to_z" },
     };
 
-    const setAt = (array, index, value) => Object.assign([], array, { [index]: value });
+    const setAt = (array: any[], index: number, value: any) => Object.assign([], array, { [index]: value });
 </script>
 
-<Dropdown
-    current={aggregatorName}
-    values={Object.keys(aggregators)}
-    on:change={(ev) => onChange(ev.detail)}
-/>
+<Dropdown current={aggregatorName} values={Object.keys(aggregators)} onchange={onChange} />
 
-<!-- svelte-ignore a11y-missing-attribute -->
+<!-- svelte-ignore a11y_missing_attribute -->
 <!-- sorting causes problems 
     <a
     role="button"
@@ -46,7 +35,7 @@
 </a>
 -->
 
-<!-- svelte-ignore a11y-missing-attribute -->
+<!-- svelte-ignore a11y_missing_attribute -->
 <!-- sorting causes problems 
 <a
     role="button"
@@ -57,9 +46,12 @@
 </a>
 -->
 
-{#if numValsAllowed > 0} <br />{/if}
+{#if numValsAllowed > 0}
+    <br />
+{/if}
 
-{#each new Array(numValsAllowed).fill() as n, i (i)}
-    <Dropdown current={vals[i]} values={valAttrs} on:change={(ev) => onUpdate(setAt(vals, i, ev.detail))} />
-    {#if i + 1 !== numValsAllowed} <br />{/if}
+{#each new Array(numValsAllowed) as n, i (i)}
+    <Dropdown current={vals[i]} values={valAttrs} onchange={(v: any) => onUpdate(setAt(vals, i, v))} />
+    {#if i + 1 !== numValsAllowed}
+        <br />{/if}
 {/each}

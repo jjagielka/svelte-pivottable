@@ -1,5 +1,5 @@
 <script>
-    import { PivotData } from "./Utilities";
+    import PivotData from "./PivotData";
     import "./pivottable.css";
     import "./grouping.css";
 
@@ -31,11 +31,7 @@
         while (i + len < arr.length) {
             let asc1, end1;
             let stop = false;
-            for (
-                x = no_loop ? j : 0, end1 = j, asc1 = end1 >= 0;
-                asc1 ? x <= end1 : x >= end1;
-                asc1 ? x++ : x--
-            ) {
+            for (x = no_loop ? j : 0, end1 = j, asc1 = end1 >= 0; asc1 ? x <= end1 : x >= end1; asc1 ? x++ : x--) {
                 if (arr[i][x] !== arr[i + len][x]) {
                     stop = true;
                 }
@@ -110,7 +106,7 @@
             if (opts.heatmapMode === "full") {
                 const allValues = [];
                 dataRowKeys.forEach((r) =>
-                    dataColKeys.forEach((c) => allValues.push(pivotData.getAggregator(r, c).value()))
+                    dataColKeys.forEach((c) => allValues.push(pivotData.getAggregator(r, c).value())),
                 );
                 const colorScale = colorScaleGenerator(allValues);
                 valueCellColors = (r, c, v) => colorScale(v);
@@ -190,9 +186,7 @@
                 {/each}
 
                 {#if j === 0}
-                    <th class="pvtTotalLabel" rowSpan={colAttrs.length + (rowAttrs.length === 0 ? 0 : 1)}>
-                        Totals
-                    </th>
+                    <th class="pvtTotalLabel" rowSpan={colAttrs.length + (rowAttrs.length === 0 ? 0 : 1)}> Totals </th>
                 {/if}
             </tr>
         {/each}
@@ -234,8 +228,8 @@
                             colSpan={useCompactRows
                                 ? rowAttrs.length + 1
                                 : j === rowAttrs.length - 1 && colAttrs.length !== 0
-                                ? 2
-                                : 1}
+                                  ? 2
+                                  : 1}
                             style:padding-left={useCompactRows
                                 ? `calc(var(--pvt-row-padding, 5px) + ${j} * var(--pvt-row-indent, 20px))`
                                 : null}
@@ -258,7 +252,7 @@
                     <td
                         class={"pvtVal" + (colGap ? " pvtLevel" + colGap : "")}
                         on:click={getClickHandler && getClickHandler(aggregator.value(), rowKey, colKey)}
-                        style={colGap || rowGap ? "": valueCellColors(rowKey, colKey, aggregator.value())}
+                        style={colGap || rowGap ? "" : valueCellColors(rowKey, colKey, aggregator.value())}
                     >
                         {aggregator.format(aggregator.value())}
                     </td>
@@ -274,9 +268,7 @@
             </tr>
         {/each}
         <tr>
-            <th class="pvtTotalLabel" colSpan={rowAttrs.length + (colAttrs.length === 0 ? 0 : 1)}>
-                Totals
-            </th>
+            <th class="pvtTotalLabel" colSpan={rowAttrs.length + (colAttrs.length === 0 ? 0 : 1)}> Totals </th>
 
             {#each colKeys as colKey, i (`total${i}`)}
                 {@const totalAggregator = pivotData.getAggregator([], colKey)}

@@ -1,9 +1,9 @@
-<script>
+<script lang="ts">
     import Sortable from "./Sortable.svelte";
     import DraggableAttribute from "./DraggableAttribute.svelte";
     import { getSort } from "../Utilities";
 
-    export let items, onChange, valueFilter, attrValues, sorters, menuLimit, onUpdate;
+    let { items, onChange, valueFilter, attrValues, sorters, menuLimit, onUpdate } = $props();
 
     const options = {
         group: "shared",
@@ -12,26 +12,27 @@
         preventOnFilter: false,
     };
 
-    let x;
-
-    function getAttrValues(x) {
+    function getAttrValues(x: string) {
         const values = attrValues[x] ?? {},
             sorter = getSort(sorters, x);
         return Object.keys(values).sort(sorter);
     }
 
-    function updateValuesInFilter(attribute, values) {
+    function updateValuesInFilter(attribute: string, values: any) {
         valueFilter[attribute] = values;
         onUpdate(valueFilter);
     }
+    console.log("DnDCell", items);
 </script>
 
-<Sortable {items} let:item={x} on:change={(ev) => onChange(ev.detail)} {options}>
-    <DraggableAttribute
-        attrValues={getAttrValues(x)}
-        name={x}
-        valueFilter={valueFilter[x] || {}}
-        {menuLimit}
-        {updateValuesInFilter}
-    />
+<Sortable {items} onchange={onChange} {options}>
+    {#snippet children(x: string)}
+        <DraggableAttribute
+            attrValues={getAttrValues(x)}
+            name={x}
+            valueFilter={valueFilter[x] || {}}
+            {menuLimit}
+            {updateValuesInFilter}
+        />
+    {/snippet}
 </Sortable>

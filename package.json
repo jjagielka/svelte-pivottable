@@ -26,16 +26,18 @@
   },
   "homepage": "https://github.com/jjagielka/svelte-pivottable#readme",
   "devDependencies": {
-    "@sveltejs/adapter-static": "^1.0.6",
-    "@sveltejs/kit": "^1.5.5",
-    "@sveltejs/package": "^1.0.2",
-    "svelte-check": "^3.0.3",
-    "typescript": "^4.9.5",
-    "vite": "^4.1.1"
+    "@sveltejs/adapter-static": "^3.0.8",
+    "@sveltejs/kit": "^2.21.4",
+    "@sveltejs/package": "^2.3.11",
+    "@sveltejs/vite-plugin-svelte": "^5.1.0",
+    "@types/sortablejs": "^1.15.8",
+    "svelte": "^5.33.19",
+    "svelte-check": "^4.2.1",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
   },
   "type": "module",
   "dependencies": {
-    "sortablejs": "^1.15.0",
-    "svelte": "^3.55.1"
+    "sortablejs": "^1.15.6"
   }
 }
