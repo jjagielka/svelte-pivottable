@@ -1,6 +1,8 @@
+import type { Component, ComponentInternals, ComponentProps } from 'svelte';
 import TsvExportRenderer from './TSVExportRenderer.svelte';
 import TableRenderer from './TableRenderer.svelte';
 import { partial } from './UI/utils';
+
 
 export default {
     Table: TableRenderer,

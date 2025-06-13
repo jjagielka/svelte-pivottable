@@ -1,13 +1,11 @@
-import type { Component } from "svelte";
+import type { Component, ComponentInternals, ComponentProps } from "svelte";
 
-export function partial(component: Component, partialProps = {}) {
-    return new Proxy(component, {
-        construct(target, [options], newTarget) {
-            options.props = { ...options.props, ...partialProps };
-            return Reflect.construct(target, [options], newTarget);
-        },
-    });
+export function partial<T extends Component<any>>(component: T, partialProps: Partial<ComponentProps<T>>) {
+    return function (anchor: ComponentInternals, props: ComponentProps<T>) {
+        component(anchor, { ...partialProps, ...props })
+    }
 }
+
 
 export function clickOutside(node: Node) {
     const handleClick = (event: MouseEvent) => {

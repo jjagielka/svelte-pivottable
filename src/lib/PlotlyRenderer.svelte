@@ -15,11 +15,11 @@
     } = $props();
 
     let pivotData: PivotData,
-        rowKeys,
-        colKeys,
-        traceKeys,
-        datumKeys,
-        numInputs,
+        rowKeys: string[][],
+        colKeys: string[][],
+        traceKeys: string[][],
+        datumKeys: string[][],
+        numInputs: number,
         data = $state(),
         hAxisTitle,
         groupByTitle,
@@ -39,7 +39,8 @@
         }
 
         let fullAggName = pivotData.props.aggregatorName;
-        numInputs = pivotData.props.aggregators[fullAggName]([])().numInputs || 0;
+        numInputs =
+            pivotData.props.aggregators[fullAggName as keyof typeof pivotData.props.aggregators]([])().numInputs || 0;
         if (numInputs !== 0) {
             fullAggName += ` of ${pivotData.props.vals.slice(0, numInputs).join(", ")}`;
         }

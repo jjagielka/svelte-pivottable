@@ -206,8 +206,10 @@ class PivotData {
 
     getAggregator(rowKey: string[], colKey: string[]) {
         let agg;
-        const flatRowKey = $state.snapshot(rowKey).join(String.fromCharCode(0));
-        const flatColKey = $state.snapshot(colKey).join(String.fromCharCode(0));
+
+        const flatRowKey = rowKey.join(String.fromCharCode(0));
+        const flatColKey = colKey.join(String.fromCharCode(0));
+
         if (rowKey.length === 0 && colKey.length === 0) {
             agg = this.allTotal;
         } else if (rowKey.length === 0) {

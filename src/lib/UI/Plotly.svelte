@@ -1,5 +1,5 @@
 <script module lang="ts">
-    interface PlotlyModule {
+    export interface PlotlyModule {
         newPlot: (node: HTMLElement, options: any) => void;
         purge: (node: HTMLElement) => void;
     }

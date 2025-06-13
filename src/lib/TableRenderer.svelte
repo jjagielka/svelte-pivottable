@@ -104,10 +104,8 @@
         console.log("big refresh");
         grouping = pivotData.props.grouping;
         useCompactRows = grouping && compactRows;
-        // speacial case for spanSize counting (no_loop)
 
         if (opts.heatmapMode) {
-            console.log("head");
             const dataRowKeys = pivotData.getRowKeys(false);
             const dataColKeys = pivotData.getColKeys(false);
 
@@ -125,19 +123,19 @@
                 const colorScale = colorScaleGenerator(allValues);
                 valueCellColors = (r, c, v) => colorScale(v);
             } else if (opts.heatmapMode === "row") {
-                const rowColorScales = {};
+                const rowColorScales: Record<string, Function> = {};
                 dataRowKeys.forEach((r) => {
                     const rowValues = dataColKeys.map((x) => pivotData.getAggregator(r, x).value());
-                    rowColorScales[r] = colorScaleGenerator(rowValues);
+                    rowColorScales[flatKey(r)] = colorScaleGenerator(rowValues);
                 });
-                valueCellColors = (r, c, v) => rowColorScales[r](v);
+                valueCellColors = (r, c, v) => rowColorScales[flatKey(r)](v);
             } else if (opts.heatmapMode === "col") {
-                const colColorScales = {};
+                const colColorScales: Record<string, Function> = {};
                 dataColKeys.forEach((c) => {
                     const colValues = dataRowKeys.map((x) => pivotData.getAggregator(x, c).value());
-                    colColorScales[c] = colorScaleGenerator(colValues);
+                    colColorScales[flatKey(c)] = colorScaleGenerator(colValues);
                 });
-                valueCellColors = (r, c, v) => colColorScales[c](v);
+                valueCellColors = (r, c, v) => colColorScales[flatKey(c)](v);
             }
         }
     });

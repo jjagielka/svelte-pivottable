@@ -1,13 +1,15 @@
+import type { Component } from 'svelte';
 import PlotlyComponent from './PlotlyRenderer.svelte';
 import ScatterRenerer from './ScatterRenderer.svelte';
 import { initPlotly } from './UI/Plotly.svelte';
 import { partial } from './UI/utils';
+import type { PlotlyModule } from './UI/Plotly.svelte';
 
-function makeRenderer(Component, traceOptions = {}, layoutOptions = {}, transpose = false) {
-    return partial(Component, { traceOptions, layoutOptions, transpose });
+function makeRenderer(component: typeof PlotlyComponent, traceOptions = {}, layoutOptions = {}, transpose = false) {
+    return partial<typeof PlotlyComponent>(component, { traceOptions, layoutOptions, transpose });
 }
 
-export default function (Plotly) {
+export default function (Plotly: PlotlyModule) {
     initPlotly(Plotly);
 
     return {
