@@ -1,7 +1,6 @@
 <script lang="ts">
-    import Sortable from "./Sortable.svelte";
-    import DraggableAttribute from "./DraggableAttribute.svelte";
     import { getSort } from "../Utilities";
+    import DraggableAttribute from "./DraggableAttribute.svelte";
     import sortableAttachment from "./SortableAttachment";
 
     let { items, onChange, valueFilter, attrValues, sorters, menuLimit, onUpdate } = $props();
@@ -11,6 +10,8 @@
         ghostClass: "pvtPlaceholder",
         filter: ".pvtFilterBox",
         preventOnFilter: false,
+        revertOnSpill: true, // Enable plugin
+        removeOnSpill: false, // Enable plugin
     };
 
     function getAttrValues(x: string) {
@@ -28,7 +29,7 @@
 <!-- this is removed after init -->
 <div {@attach sortableAttachment(options, onChange)} hidden></div>
 {#each items as name (name)}
-    {@const is_empty = valueFilter[name] ? Object.keys(valueFilter[name]).length === 0 : true}
+    <!-- {@const is_empty = valueFilter[name] ? Object.keys(valueFilter[name]).length === 0 : true}
     <li data-id={name}>
         <span class={`pvtAttr ${is_empty ? "" : "pvtFilteredAttribute"}`}>
             {name}
@@ -37,12 +38,12 @@
                 ▾
             </span>
         </span>
-    </li>
-    <!-- <DraggableAttribute
+    </li> -->
+    <DraggableAttribute
         attrValues={getAttrValues(name)}
         {name}
         valueFilter={valueFilter[name]}
         {menuLimit}
         {updateValuesInFilter}
-    /> -->
+    />
 {/each}

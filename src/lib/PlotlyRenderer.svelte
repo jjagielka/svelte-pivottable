@@ -1,6 +1,6 @@
 <script lang="ts">
     import Plotly from "./UI/Plotly.svelte";
-    import PivotData from "./PivotData";
+    import PivotData from "./PivotData.svelte";
 
     let {
         plotlyOptions = {},

@@ -4,6 +4,13 @@ import { aggregators, getSort, naturalSort } from "./Utilities";
 const subarrays = <T>(array: T[]) => array.map((d, i) => array.slice(0, i + 1));
 function subarrays1<T>(array: T[]): T[][] { return array.map((d, i) => array.slice(0, i + 1)) };
 
+// returns a new object with the values at each key mapped using mapFn(value)
+function objectMap(object) {
+    return Object.keys(object).reduce(function (result, key) {
+        result[key] = object[key]
+        return result
+    }, {})
+}
 
 /*
 Data Model class
@@ -39,7 +46,7 @@ class PivotData {
     aggregator: typeof aggregators["Average"];
 
     constructor(inputProps = {}) {
-        this.props = Object.assign({}, PivotData.defaultProps, inputProps);
+        this.props = Object.assign({}, PivotData.defaultProps, objectMap(inputProps));
 
         this.aggregator = this.props.aggregator(this.props.vals);
         this.tree = {};
@@ -51,14 +58,14 @@ class PivotData {
         this.sorted = false;
 
         // iterate through input, accumulating data for cells
-        PivotData.forEachRecord(this.props.data, this.props.derivedAttributes, (record) => {
+        PivotData.forEachRecord(this.props.data, this.props.derivedAttributes, (record: any) => {
             if (this.filter(record)) {
                 this.processRecord(record);
             }
         });
     }
 
-    filter(record) {
+    filter(record: any) {
         for (const k in this.props.valueFilter) {
             if (record[k] in this.props.valueFilter[k]) {
                 return false;
@@ -199,8 +206,8 @@ class PivotData {
 
     getAggregator(rowKey: string[], colKey: string[]) {
         let agg;
-        const flatRowKey = rowKey.join(String.fromCharCode(0));
-        const flatColKey = colKey.join(String.fromCharCode(0));
+        const flatRowKey = $state.snapshot(rowKey).join(String.fromCharCode(0));
+        const flatColKey = $state.snapshot(colKey).join(String.fromCharCode(0));
         if (rowKey.length === 0 && colKey.length === 0) {
             agg = this.allTotal;
         } else if (rowKey.length === 0) {
@@ -226,7 +233,8 @@ class PivotData {
     // can handle arrays or jQuery selections of tables
     static forEachRecord(input, derivedAttributes, f) {
         let addRecord, record;
-        if (Object.getOwnPropertyNames(derivedAttributes).length === 0) {
+        // if (Object.getOwnPropertyNames(derivedAttributes).length === 0) {
+        if (Object.keys(derivedAttributes).length === 0) {
             addRecord = f;
         } else {
             addRecord = function (record: Record<string, number>) {
@@ -264,13 +272,14 @@ class PivotData {
             }
 
             // array of objects
-            return (() => {
-                const result1 = [];
-                for (record of Array.from(input)) {
-                    result1.push(addRecord(record));
-                }
-                return result1;
-            })();
+            return Array.from(input).map(addRecord);
+            // return (() => {
+            //     const result1 = [];
+            //     for (record of Array.from(input)) {
+            //         result1.push(addRecord(record));
+            //     }
+            //     return result1;
+            // })();
         }
         throw new Error('unknown input format');
     };

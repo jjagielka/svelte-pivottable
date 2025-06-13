@@ -4,15 +4,14 @@
 
     let { valueFilter, name, attrValues, menuLimit, updateValuesInFilter } = $props();
 
-    // let open = $state(false);
+    let open = $state(false);
 
-    // let is_empty = $derived(valueFilter ? Object.keys(valueFilter).length === 0 : true);
+    let is_empty = $derived(valueFilter ? Object.keys(valueFilter).length === 0 : true);
 
-    // const toggleOpen = () => (open = !open);
+    const toggleOpen = () => (open = !open);
 </script>
 
-<span data-id={name}>{name}</span>
-<!-- <li data-id={name}>
+<li data-id={name}>
     <span class={`pvtAttr ${is_empty ? "" : "pvtFilteredAttribute"}`}>
         {name}
         <span class="pvtTriangle" onclick={toggleOpen} onkeypress={toggleOpen} role="presentation">
@@ -32,4 +31,4 @@
             />
         </Draggable>
     {/if}
-</li> -->
+</li>

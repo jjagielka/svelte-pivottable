@@ -108,7 +108,15 @@
         <br /><br />
     </div>
 
-    <PivotTableUI {...options} {renderers} {grouping} {compactRows} {rowGroupBefore} {colGroupBefore} />
+    <PivotTableUI
+        {...options}
+        {renderers}
+        {grouping}
+        {compactRows}
+        {rowGroupBefore}
+        {colGroupBefore}
+        tableOptions={{ clickCallback: console.log }}
+    />
 
     <hr />
     <footer style="text-align: center">

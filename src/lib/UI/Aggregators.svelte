@@ -29,7 +29,7 @@
     <a
     role="button"
     class="pvtRowOrder"
-    on:click={() => propUpdater("rowOrder")(sortIcons[props.rowOrder].next)}
+    onclick={() => propUpdater("rowOrder")(sortIcons[props.rowOrder].next)}
     >
     {sortIcons[props.rowOrder].rowSymbol}
 </a>
@@ -40,7 +40,7 @@
 <a
     role="button"
     class="pvtColOrder"
-    on:click={() => propUpdater("colOrder")(sortIcons[props.colOrder].next)}
+    onclick={() => propUpdater("colOrder")(sortIcons[props.colOrder].next)}
 >
     {sortIcons[props.colOrder].colSymbol}
 </a>

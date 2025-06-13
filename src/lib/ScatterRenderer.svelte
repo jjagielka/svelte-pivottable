@@ -1,5 +1,5 @@
 <script lang="ts">
-    import PivotData from "./PivotData";
+    import PivotData from "./PivotData.svelte";
     import Plotly from "./UI/Plotly.svelte";
 
     let { plotlyOptions = {}, plotlyConfig = {}, onRendererUpdate, ...restProps } = $props();

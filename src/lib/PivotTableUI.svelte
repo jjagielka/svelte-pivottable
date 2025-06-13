@@ -1,12 +1,12 @@
 <script lang="ts">
+    import PivotData from "./PivotData.svelte";
+    import PivotTable from "./PivotTable.svelte";
+    import TableRenderers from "./TableRenderers";
     import Aggregators from "./UI/Aggregators.svelte";
     import DnDCell from "./UI/DnDCell.svelte";
     import Dropdown from "./UI/Dropdown.svelte";
     import MainTable from "./UI/MainTable.svelte";
-    import PivotTable from "./PivotTable.svelte";
-    import PivotData from "./PivotData";
-    import TableRenderers from "./TableRenderers";
-    import { sortAs, aggregators as defaultAggregators } from "./Utilities";
+    import { aggregators as defaultAggregators, sortAs } from "./Utilities";
 
     let {
         rendererName = "Table",
