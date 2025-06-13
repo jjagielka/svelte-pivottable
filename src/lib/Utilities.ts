@@ -119,11 +119,11 @@ const naturalSort = (as = null, bs = null, nulls_first = true) => {
     return a.length - b.length;
 };
 
-const sortAs = function (order) {
-    const mapping = {};
+const sortAs = function (order: string[]) {
+    const mapping: Record<string, string> = {};
 
     // sort lowercased keys similarly
-    const l_mapping = {};
+    const l_mapping: Record<string, string> = {};
     for (const i in order) {
         const x = order[i];
         mapping[x] = i;
@@ -131,14 +131,13 @@ const sortAs = function (order) {
             l_mapping[x.toLowerCase()] = i;
         }
     }
-    return function (a = null, b = null, nulls_first = true) {
+    return function (a: string | null = null, b: string | null = null, nulls_first = true) {
         if (b !== null && a === null) {
             return nulls_first ? -1 : 1;
         }
         if (a !== null && b === null) {
             return nulls_first ? 1 : -1;
         }
-
         if (a in mapping && b in mapping) {
             return mapping[a] - mapping[b];
         } else if (a in mapping) {

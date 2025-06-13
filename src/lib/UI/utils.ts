@@ -1,5 +1,7 @@
-export function partial(Component, partialProps = {}) {
-    return new Proxy(Component, {
+import type { Component } from "svelte";
+
+export function partial(component: Component, partialProps = {}) {
+    return new Proxy(component, {
         construct(target, [options], newTarget) {
             options.props = { ...options.props, ...partialProps };
             return Reflect.construct(target, [options], newTarget);
@@ -7,10 +9,10 @@ export function partial(Component, partialProps = {}) {
     });
 }
 
-export function clickOutside(node) {
-    function handleClick(event) {
-        if (node && !node.contains(event.target) && !event.defaultPrevented) {
-            node.dispatchEvent(new CustomEvent('outside', node));
+export function clickOutside(node: Node) {
+    const handleClick = (event: MouseEvent) => {
+        if (node && event.target && !node.contains(event.target as Node) && !event.defaultPrevented) {
+            node.dispatchEvent(new CustomEvent('outside', { detail: node }));
         }
     }
 
@@ -23,10 +25,10 @@ export function clickOutside(node) {
     };
 }
 
-export function clickClose(node, selector) {
+export function clickClose(node: Element, selector: any) {
     const element = node.querySelector(selector);
 
-    function handleClick(event) {
+    const handleClick = (event: MouseEvent) => {
         if (!event.defaultPrevented) {
             node.dispatchEvent(new CustomEvent('close', element));
         }
@@ -41,13 +43,4 @@ export function clickClose(node, selector) {
     };
 }
 
-export function delta(newObj, oldObj) {
-    return Object.keys(newObj).reduce(function (diff, key) {
-        return oldObj[key] === newObj[key]
-            ? diff
-            : {
-                  ...diff,
-                  [key]: newObj[key],
-              };
-    }, {});
-}
+

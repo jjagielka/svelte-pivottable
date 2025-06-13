@@ -33,15 +33,24 @@
         ...restProps
     } = $props();
 
-    let unusedOrder = [],
-        attrValues = {};
+    let unusedOrder: string[] = [],
+        attrValues: Record<string, Record<string, number>> = {};
+
+    const notHidden = (e: string) => !hiddenAttributes.includes(e) && !hiddenFromDragDrop.includes(e);
+
+    let colAttrs = $derived(cols.filter(notHidden));
+    let rowAttrs = $derived(rows.filter(notHidden));
+
+    let unusedAttrs: string[],
+        horizUnused: boolean = $state(false),
+        valAttrs: string[];
 
     $effect(() => {
         attrValues = {};
 
         let recordsProcessed = 0;
 
-        PivotData.forEachRecord(data, derivedAttributes, function (record) {
+        PivotData.forEachRecord(data, derivedAttributes, function (record: Record<string, any>) {
             for (const attr of Object.keys(record)) {
                 if (!(attr in attrValues)) {
                     attrValues[attr] = {};
@@ -51,7 +60,7 @@
                 }
             }
             for (const attr in attrValues) {
-                const value = attr in record ? record[attr] : "null";
+                const value: string = attr in record ? record[attr] : "null";
                 if (!(value in attrValues[attr])) {
                     attrValues[attr][value] = 0;
                 }
@@ -59,18 +68,7 @@
             }
             recordsProcessed++;
         });
-    });
 
-    const notHidden = (e: string) => !hiddenAttributes.includes(e) && !hiddenFromDragDrop.includes(e);
-
-    let colAttrs = $derived(cols.filter(notHidden));
-    let rowAttrs = $derived(rows.filter(notHidden));
-
-    let unusedAttrs,
-        horizUnused = $state(),
-        valAttrs;
-
-    $effect(() => {
         unusedAttrs = Object.keys(attrValues)
             .filter((e) => !colAttrs.includes(e) && !rowAttrs.includes(e) && notHidden(e))
             .sort(sortAs(unusedOrder));
@@ -106,8 +104,8 @@
             {aggregatorName}
             {aggregators}
             {valAttrs}
-            onChange={(v) => (aggregatorName = v)}
-            onUpdate={(v) => (vals = v)}
+            onChange={(v: string) => (aggregatorName = v)}
+            onUpdate={(v: number[]) => (vals = v)}
             {vals}
         />
     {/snippet}
@@ -118,8 +116,8 @@
             {valueFilter}
             {attrValues}
             items={unusedAttrs}
-            onChange={(order) => (unusedOrder = order)}
-            onUpdate={(v) => (valueFilter = v)}
+            onChange={(order: string[]) => (unusedOrder = order)}
+            onUpdate={(v: object) => (valueFilter = v)}
             {menuLimit}
         />
     {/snippet}
@@ -130,8 +128,8 @@
             {valueFilter}
             {attrValues}
             items={colAttrs}
-            onChange={(v) => (cols = v)}
-            onUpdate={(v) => (valueFilter = v)}
+            onChange={(v: string[]) => (cols = v)}
+            onUpdate={(v: object) => (valueFilter = v)}
             {menuLimit}
         />
     {/snippet}
@@ -142,8 +140,8 @@
             {valueFilter}
             {attrValues}
             items={rowAttrs}
-            onChange={(v) => (rows = v)}
-            onUpdate={(v) => (valueFilter = v)}
+            onChange={(v: string[]) => (rows = v)}
+            onUpdate={(v: object) => (valueFilter = v)}
             {menuLimit}
         />
     {/snippet}

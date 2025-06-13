@@ -72,8 +72,6 @@
 
     let grouping = $state(false);
     let useCompactRows = $state(false);
-    // speacial case for spanSize counting (no_loop)
-    let specialCase = $state(false);
 
     let folded = $state.raw(new Set<string>());
     const isFolded = (keys: string[][]) => has(folded, keys.map(flatKey));
@@ -85,16 +83,8 @@
     let rowTotalColors = $state((v: number): string => "");
     let colTotalColors = $state((v: number): string => "");
 
-    let rbClass = $state("");
-    let cbClass = $state("");
-
     $effect(() => {
-        console.log("big refresh");
-        grouping = pivotData.props.grouping;
-        useCompactRows = grouping && compactRows;
-        // speacial case for spanSize counting (no_loop)
-        specialCase = grouping && !pivotData.props.rowGroupBefore;
-
+        console.log("small refresh");
         let rowKeysTemp = pivotData.getRowKeys(true);
         let colKeysTemp = pivotData.getColKeys(true);
 
@@ -108,8 +98,16 @@
 
         rowKeys = rowKeysTemp;
         colKeys = colKeysTemp;
+    });
+
+    $effect(() => {
+        console.log("big refresh");
+        grouping = pivotData.props.grouping;
+        useCompactRows = grouping && compactRows;
+        // speacial case for spanSize counting (no_loop)
 
         if (opts.heatmapMode) {
+            console.log("head");
             const dataRowKeys = pivotData.getRowKeys(false);
             const dataColKeys = pivotData.getColKeys(false);
 
@@ -142,17 +140,14 @@
                 valueCellColors = (r, c, v) => colColorScales[c](v);
             }
         }
-
-        rbClass = grouping ? (pivotData.props.rowGroupBefore ? "rowGroupBefore" : "rowGroupAfter") : "";
-        cbClass = grouping ? (pivotData.props.colGroupBefore ? "colGroupBefore" : "colGroupAfter") : "";
     });
 
     const clickClass = (pred: boolean, closed: boolean) => (pred ? " pvtClickable" + (closed ? " closed" : "") : "");
 
     let getClickHandler = $derived(
         tableOptions && tableOptions.clickCallback
-            ? (value: number, rowValues: number[], colValues: number[]) => {
-                  const filters: Record<string, number> = {};
+            ? (value: number, rowValues: (string | null)[], colValues: (string | null)[]) => {
+                  const filters: Record<string, string> = {};
                   //   for (const i of Object.keys(pivotData.props.cols || {})) {
                   for (const i in pivotData.props.cols || []) {
                       const attr = pivotData.props.cols[i];
@@ -173,7 +168,13 @@
     );
 </script>
 
-<table class={`pvtTable ${rbClass} ${cbClass}`}>
+<table
+    class={[
+        "pvtTable",
+        grouping ? (pivotData.props.rowGroupBefore ? "rowGroupBefore" : "rowGroupAfter") : "",
+        grouping ? (pivotData.props.colGroupBefore ? "colGroupBefore" : "colGroupAfter") : "",
+    ].join(" ")}
+>
     <thead>
         {#each pivotData.props.cols as c, j (`col-Attr${j}`)}
             {@const clickable = grouping && pivotData.props.cols.length > j + 1}
@@ -243,6 +244,7 @@
             <tr class={rowGap ? "pvtLevel" + rowGap : "pvtData"}>
                 {#each rowKey as txt, j (`rowKeyLabel${i}-${j}`)}
                     {@const clickable = grouping && pivotData.props.rows.length > j + 1}
+                    {@const specialCase = grouping && !pivotData.props.rowGroupBefore}
                     {@const xx = useCompactRows ? 1 : spanSize(rowKeys, i, j, specialCase)}
                     {#if !((useCompactRows && j < rowKey.length - 1) || xx === -1)}
                         <th
