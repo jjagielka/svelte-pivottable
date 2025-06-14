@@ -6,7 +6,8 @@ function makeRenderer(component: typeof PlotlyComponent, traceOptions = {}, layo
     return partial<typeof PlotlyComponent>(component, { traceOptions, layoutOptions, transpose });
 }
 
-export default function () {
+export default function (Plotly: any) {
+    if (!Plotly) { return {} };
 
     return {
         'Grouped Column Chart': makeRenderer(PlotlyComponent, { type: 'bar' }, { barmode: 'group' }),

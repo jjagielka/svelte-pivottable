@@ -5,7 +5,6 @@ export default function (options = {}, onchange: (v: (string | undefined)[]) => 
 
     const notify = (el: Element) => {
         const val = [...el.children].map((i) => (i as HTMLElement).dataset.id).filter(x => x);
-        console.log('notify', val)
         onchange(val);
     }
 
@@ -20,11 +19,10 @@ export default function (options = {}, onchange: (v: (string | undefined)[]) => 
                 onAdd: (ev) => notify(ev.to),
                 onRemove: (ev) => notify(ev.from),
                 onEnd: (ev) => {
-                    // console.log(ev)
                     // cancel the UI update so Svelte will take care of it
-
-                    if (ev.from !== ev.to)
+                    if (ev.from !== ev.to) {
                         ev.item.remove();
+                    }
                     // if (ev.oldIndex !== undefined) {
                     //     ev.from.insertBefore(ev.item, ev.from.childNodes[(ev.oldIndex + 1) * 2 - 1]);
                     // }

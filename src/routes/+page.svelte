@@ -1,13 +1,14 @@
-<script>
+<script lang="ts">
     import PivotTableUI from "$lib/PivotTableUI.svelte";
     import data from "./_montreal.json";
     import { derivers } from "$lib/Utilities";
     import TableRenderers from "$lib/TableRenderers";
     import PlotlyRenderers from "$lib/PlotlyRenderers";
     import { onMount } from "svelte";
+    import Plotly from "$lib/UI/Plotly.svelte";
 
     let plotlyRenderers = {};
-    let renderers = $state();
+    let renderers = $state({});
 
     onMount(async () => {
         // plotly.js requires an access to window object
@@ -28,7 +29,7 @@
 
     const derivedAttributes = {
         "Age Bin": derivers.bin("Age", 10),
-        "Gender Imbalance": function (mp) {
+        "Gender Imbalance": function (mp: any) {
             return mp["Gender"] == "Male" ? 1 : -1;
         },
     };

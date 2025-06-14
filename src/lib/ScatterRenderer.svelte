@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { Data, Datum, Layout, PlotData } from "plotly.js";
+    import type { Datum, Layout, PlotData } from "plotly.js";
     import PivotData from "./PivotData.svelte";
     import Plotly from "./UI/Plotly.svelte";
 

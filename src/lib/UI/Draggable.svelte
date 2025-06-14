@@ -32,19 +32,16 @@
     function init(node: HTMLElement) {
         const handleElem = node.querySelector(handle) ?? node;
         handleElem.addEventListener("mousedown", onMouseDown, true);
-        console.log("draggable", node, handleElem);
-        return {
-            destroy() {
-                handleElem.removeEventListener("mousedown", onMouseDown, true);
-            },
+        return () => {
+            handleElem.removeEventListener("mousedown", onMouseDown, true);
         };
     }
+    // use:clickClose={close}
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <section
-    use:init
-    use:clickClose={close}
+    {@attach init}
     style="left: {left}px; top: {top}px;"
     class={"draggable"}
     {onclose}

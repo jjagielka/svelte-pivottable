@@ -2,7 +2,7 @@ import type { Component, ComponentInternals, ComponentProps } from "svelte";
 
 export function partial<T extends Component<any>>(component: T, partialProps: Partial<ComponentProps<T>>) {
     return function (anchor: ComponentInternals, props: ComponentProps<T>) {
-        component(anchor, { ...partialProps, ...props })
+        return component(anchor, { ...partialProps, ...props })
     }
 }
 
