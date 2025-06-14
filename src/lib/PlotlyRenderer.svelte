@@ -1,6 +1,7 @@
 <script lang="ts">
-    import Plotly from "./UI/Plotly.svelte";
+    import type { Layout, PlotData } from "plotly.js";
     import PivotData from "./PivotData.svelte";
+    import Plotly from "./UI/Plotly.svelte";
 
     let {
         plotlyOptions = {},
@@ -20,10 +21,10 @@
         traceKeys: string[][],
         datumKeys: string[][],
         numInputs: number,
-        data = $state(),
+        data: Partial<PlotData>[] = $state.raw([]),
         hAxisTitle,
         groupByTitle,
-        layout = $state();
+        layout: Partial<Layout> = $state.raw({});
 
     $effect(() => {
         pivotData = new PivotData(restProps);
@@ -44,7 +45,7 @@
         if (numInputs !== 0) {
             fullAggName += ` of ${pivotData.props.vals.slice(0, numInputs).join(", ")}`;
         }
-        data = traceKeys.map((traceKey) => {
+        const dataTemp = traceKeys.map((traceKey) => {
             const values = [];
             const labels = [];
             for (const datumKey of datumKeys) {
@@ -54,7 +55,7 @@
                 values.push(isFinite(val) ? val : null);
                 labels.push(datumKey.join("-") || " ");
             }
-            const trace = { name: traceKey.join("-") || fullAggName };
+            const trace: Partial<PlotData> = { name: traceKey.join("-") || fullAggName };
             if (traceOptions.type === "pie") {
                 trace.values = values;
                 trace.labels = labels.length > 1 ? labels : [fullAggName];
@@ -62,7 +63,7 @@
                 trace.x = transpose ? values : labels;
                 trace.y = transpose ? labels : values;
             }
-            return Object.assign(trace, traceOptions);
+            return Object.assign(trace, traceOptions) as Partial<PlotData>;
         });
 
         let titleText = fullAggName;
@@ -75,8 +76,8 @@
             titleText += ` by ${groupByTitle}`;
         }
 
-        layout = {
-            title: titleText,
+        const layoutTemp: Partial<Layout> = {
+            title: { text: titleText },
             hovermode: "closest",
             /* eslint-disable no-magic-numbers */
             width: window.innerWidth / 1.5,
@@ -85,37 +86,40 @@
         };
 
         if (traceOptions.type === "pie") {
-            const columns = Math.ceil(Math.sqrt(data.length));
-            const rows = Math.ceil(data.length / columns);
-            layout.grid = { columns, rows };
-            data.forEach((d, i) => {
+            const columns = Math.ceil(Math.sqrt(dataTemp.length));
+            const rows = Math.ceil(dataTemp.length / columns);
+            layoutTemp.grid = { columns, rows };
+            dataTemp.forEach((d, i) => {
                 d.domain = {
                     row: Math.floor(i / columns),
                     column: i - columns * Math.floor(i / columns),
                 };
-                if (data.length > 1) {
-                    d.title = d.name;
+                if (dataTemp.length > 1) {
+                    d.title = { text: d.name };
                 }
             });
-            if (data[0].labels.length === 1) {
-                layout.showlegend = false;
+            if (dataTemp[0].labels?.length === 1) {
+                layoutTemp.showlegend = false;
             }
         } else {
-            layout.xaxis = {
-                title: transpose ? fullAggName : null,
+            layoutTemp.xaxis = {
+                title: transpose ? { text: fullAggName } : undefined,
                 automargin: true,
             };
-            layout.yaxis = {
-                title: transpose ? null : fullAggName,
+            layoutTemp.yaxis = {
+                title: transpose ? undefined : { text: fullAggName },
                 automargin: true,
             };
         }
+
+        data = dataTemp;
+        layout = layoutTemp;
     });
 </script>
 
 <Plotly
+    layout={{ ...layout, ...layoutOptions, ...plotlyOptions }}
     {data}
-    layout={Object.assign(layout, layoutOptions, plotlyOptions)}
     config={plotlyConfig}
     onUpdate={onRendererUpdate}
 />

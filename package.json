@@ -30,6 +30,7 @@
     "@sveltejs/kit": "^2.21.4",
     "@sveltejs/package": "^2.3.11",
     "@sveltejs/vite-plugin-svelte": "^5.1.0",
+    "@types/plotly.js": "^3.0.0",
     "@types/sortablejs": "^1.15.8",
     "svelte": "^5.33.19",
     "svelte-check": "^4.2.1",

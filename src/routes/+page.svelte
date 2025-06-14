@@ -17,6 +17,7 @@
 
         // create Plotly renderers via dependency injection
         plotlyRenderers = PlotlyRenderers(Plotly);
+        // plotlyRenderers = {};
         renderers = { ...TableRenderers, ...plotlyRenderers };
     });
 

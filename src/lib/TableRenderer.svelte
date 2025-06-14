@@ -77,27 +77,24 @@
     const isFolded = (keys: string[][]) => has(folded, keys.map(flatKey));
     const fold = (keys: string[][]) => (folded = toggle(new Set(folded), keys.map(flatKey)));
 
-    let rowKeys: string[][] = $state([]);
-    let colKeys: string[][] = $state([]);
     let valueCellColors = $state((r: string[], c: string[], v: number): string => "");
     let rowTotalColors = $state((v: number): string => "");
     let colTotalColors = $state((v: number): string => "");
 
-    $effect(() => {
+    let [rowKeys, colKeys]: string[][][] = $derived.by(() => {
         console.log("small refresh");
-        let rowKeysTemp = pivotData.getRowKeys(true);
-        let colKeysTemp = pivotData.getColKeys(true);
+        let rowKeys = pivotData.getRowKeys(true);
+        let colKeys = pivotData.getColKeys(true);
 
         if (grouping) {
             for (const key of folded) {
                 const keyEx = key + String.fromCharCode(0);
-                colKeysTemp = colKeysTemp.filter((colKey) => !flatKey(colKey).startsWith(keyEx));
-                rowKeysTemp = rowKeysTemp.filter((rowKey) => !flatKey(rowKey).startsWith(keyEx));
+                colKeys = colKeys.filter((colKey) => !flatKey(colKey).startsWith(keyEx));
+                rowKeys = rowKeys.filter((rowKey) => !flatKey(rowKey).startsWith(keyEx));
             }
         }
 
-        rowKeys = rowKeysTemp;
-        colKeys = colKeysTemp;
+        return [rowKeys, colKeys];
     });
 
     $effect(() => {

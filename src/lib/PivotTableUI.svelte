@@ -33,20 +33,15 @@
         ...restProps
     } = $props();
 
-    let unusedOrder: string[] = [],
-        attrValues: Record<string, Record<string, number>> = {};
+    let unusedOrder: string[] = [];
 
     const notHidden = (e: string) => !hiddenAttributes.includes(e) && !hiddenFromDragDrop.includes(e);
 
     let colAttrs = $derived(cols.filter(notHidden));
     let rowAttrs = $derived(rows.filter(notHidden));
 
-    let unusedAttrs: string[],
-        horizUnused: boolean = $state(false),
-        valAttrs: string[];
-
-    $effect(() => {
-        attrValues = {};
+    let attrValues: Record<string, Record<string, number>> = $derived.by(() => {
+        let attrValues: Record<string, Record<string, number>> = {};
 
         let recordsProcessed = 0;
 
@@ -68,18 +63,23 @@
             }
             recordsProcessed++;
         });
-
-        unusedAttrs = Object.keys(attrValues)
-            .filter((e) => !colAttrs.includes(e) && !rowAttrs.includes(e) && notHidden(e))
-            .sort(sortAs(unusedOrder));
-
-        const unusedLength = unusedAttrs.reduce((r, e) => r + e.length, 0);
-        horizUnused = unusedLength < unusedOrientationCutoff;
-
-        valAttrs = Object.keys(attrValues).filter(
-            (e) => !hiddenAttributes.includes(e) && !hiddenFromAggregators.includes(e),
-        );
+        return attrValues;
     });
+
+    let unusedAttrs: string[] = $derived(
+        Object.keys(attrValues)
+            .filter((e) => !colAttrs.includes(e) && !rowAttrs.includes(e) && notHidden(e))
+            .sort(sortAs(unusedOrder)),
+    );
+
+    let horizUnused: boolean = $derived.by(() => {
+        const unusedLength = unusedAttrs.reduce((r, e) => r + e.length, 0);
+        return unusedLength < unusedOrientationCutoff;
+    });
+
+    let valAttrs: string[] = $derived(
+        Object.keys(attrValues).filter((e) => !hiddenAttributes.includes(e) && !hiddenFromAggregators.includes(e)),
+    );
 
     const firstKey = (x: object) => Object.keys(x)[0];
 

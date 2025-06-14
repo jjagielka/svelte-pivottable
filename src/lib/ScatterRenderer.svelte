@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { Data, Datum, Layout, PlotData } from "plotly.js";
     import PivotData from "./PivotData.svelte";
     import Plotly from "./UI/Plotly.svelte";
 
@@ -7,24 +8,8 @@
     let pivotData: PivotData,
         rowKeys: string[][],
         colKeys: string[][],
-        data: { x: string[]; y: string[]; text: string[]; type: string; mode: string } = $state({
-            x: [],
-            y: [],
-            text: [],
-            type: "scatter",
-            mode: "markers",
-        }),
-        layout:
-            | {
-                  title: string;
-                  hovermode: string;
-                  xaxis: { title: string; automargin: boolean };
-                  yaxis: { title: string; automargin: boolean };
-
-                  width: number;
-                  height: number;
-              }
-            | undefined = $state();
+        layout: Partial<Layout> = $state.raw({}),
+        data: Partial<PlotData> = $state.raw({ type: "scatter", mode: "markers" });
 
     $effect(() => {
         pivotData = new PivotData(restProps);
@@ -37,24 +22,26 @@
             colKeys.push([]);
         }
 
-        data = { x: [], y: [], text: [], type: "scatter", mode: "markers" };
+        data.x = [] as Datum[];
+        data.y = [] as Datum[];
+        data.text = [] as string[];
 
-        rowKeys.map((rowKey) => {
-            colKeys.map((colKey) => {
+        for (const rowKey of rowKeys) {
+            for (const colKey of colKeys) {
                 const v = pivotData.getAggregator(rowKey, colKey).value();
                 if (v !== null) {
                     data.x.push(colKey.join("-"));
                     data.y.push(rowKey.join("-"));
                     data.text.push(v);
                 }
-            });
-        });
+            }
+        }
 
         layout = {
-            title: pivotData.props.rows.join("-") + " vs " + pivotData.props.cols.join("-"),
+            title: { text: pivotData.props.rows.join("-") + " vs " + pivotData.props.cols.join("-") },
             hovermode: "closest",
-            xaxis: { title: pivotData.props.cols.join("-"), automargin: true },
-            yaxis: { title: pivotData.props.rows.join("-"), automargin: true },
+            xaxis: { title: { text: pivotData.props.cols.join("-") }, automargin: true },
+            yaxis: { title: { text: pivotData.props.rows.join("-") }, automargin: true },
             /* eslint-disable no-magic-numbers */
             width: window.innerWidth / 1.5,
             height: window.innerHeight / 1.4 - 50,

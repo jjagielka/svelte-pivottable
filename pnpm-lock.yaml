@@ -24,6 +24,9 @@ importers:
       '@sveltejs/vite-plugin-svelte':
         specifier: ^5.1.0
         version: 5.1.0(svelte@5.33.19)(vite@6.3.5)
+      '@types/plotly.js':
+        specifier: ^3.0.0
+        version: 3.0.0
       '@types/sortablejs':
         specifier: ^1.15.8
         version: 1.15.8
@@ -366,6 +369,9 @@ packages:
 
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
+
+  '@types/plotly.js@3.0.0':
+    resolution: {integrity: sha512-WiUzfUh5Mn7+ySbuh2j0fIr7AtLmPzfu/zjtjVx4mftbuZonkQ6UqwylO9F1LqM9+PXZM8XYtyovIHw8cE+4ug==}
 
   '@types/sortablejs@1.15.8':
     resolution: {integrity: sha512-b79830lW+RZfwaztgs1aVPgbasJ8e7AXtZYHTELNXZPsERt4ymJdjV4OccDbHQAvHrCcFpbF78jkm0R6h/pZVg==}
@@ -830,6 +836,8 @@ snapshots:
   '@types/estree@1.0.7': {}
 
   '@types/estree@1.0.8': {}
+
+  '@types/plotly.js@3.0.0': {}
 
   '@types/sortablejs@1.15.8': {}
 
