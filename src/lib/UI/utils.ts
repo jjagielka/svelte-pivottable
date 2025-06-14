@@ -29,6 +29,7 @@ export function clickClose(node: Element, selector: any) {
     const handleClick = (event: MouseEvent) => {
         if (!event.defaultPrevented) {
             node.dispatchEvent(new CustomEvent('close', element));
+            console.log('dispaching close')
         }
     }
 

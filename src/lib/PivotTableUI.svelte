@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { setContext, type Component } from "svelte";
     import PivotData from "./PivotData.svelte";
     import PivotTable from "./PivotTable.svelte";
     import TableRenderers from "./TableRenderers";
@@ -10,7 +11,7 @@
 
     let {
         rendererName = "Table",
-        renderers = TableRenderers,
+        renderers = TableRenderers as Record<string, Component>,
         aggregatorName = "Count",
         aggregators = defaultAggregators,
         hiddenAttributes = [],
@@ -25,13 +26,15 @@
         rows = PivotData.defaultProps.rows,
         vals = PivotData.defaultProps.vals,
         sorters = PivotData.defaultProps.sorters,
-        valueFilter = PivotData.defaultProps.valueFilter,
 
         // pivot data
         data,
 
         ...restProps
     } = $props();
+
+    let valueFilter: FitlerSet = $state({});
+    setContext<FitlerSet>("valueFilter", valueFilter);
 
     let unusedOrder: string[] = [];
 
@@ -92,6 +95,11 @@
             (aggregatorName in aggregators ? aggregatorName : firstKey(aggregators)) as keyof typeof aggregators
         ],
     );
+
+    function onUpdate(v: object) {
+        console.log("onUpdate", v);
+        // valueFilter = v;
+    }
 </script>
 
 <MainTable {horizUnused}>
@@ -113,11 +121,10 @@
     {#snippet unusedAttrsCell()}
         <DnDCell
             {sorters}
-            {valueFilter}
             {attrValues}
             items={unusedAttrs}
             onChange={(order: string[]) => (unusedOrder = order)}
-            onUpdate={(v: object) => (valueFilter = v)}
+            {onUpdate}
             {menuLimit}
         />
     {/snippet}
@@ -125,11 +132,10 @@
     {#snippet colAttrsCell()}
         <DnDCell
             {sorters}
-            {valueFilter}
             {attrValues}
             items={colAttrs}
             onChange={(v: string[]) => (cols = v)}
-            onUpdate={(v: object) => (valueFilter = v)}
+            {onUpdate}
             {menuLimit}
         />
     {/snippet}
@@ -137,11 +143,10 @@
     {#snippet rowAttrsCell()}
         <DnDCell
             {sorters}
-            {valueFilter}
             {attrValues}
             items={rowAttrs}
             onChange={(v: string[]) => (rows = v)}
-            onUpdate={(v: object) => (valueFilter = v)}
+            {onUpdate}
             {menuLimit}
         />
     {/snippet}

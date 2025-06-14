@@ -3,7 +3,12 @@
 </script>
 
 <script lang="ts">
-    let { name, values, valueFilter = {}, menuLimit = 500, onchange } = $props();
+    import { getContext } from "svelte";
+
+    let { name, values, menuLimit = 500 } = $props();
+
+    let globalFilter = getContext<FitlerSet>("valueFilter");
+    let valueFilter = $state(globalFilter[name] || {});
 
     let filterText = $state("");
 
@@ -11,7 +16,6 @@
 
     function toggleValue(value: string) {
         value in valueFilter ? removeValuesFromFilter([value]) : addValuesToFilter([value]);
-        onchange(valueFilter);
     }
 
     function setValuesInFilter(values: string[]) {
@@ -22,19 +26,24 @@
 
     function addValuesToFilter(values: string[]) {
         values.forEach((v) => (valueFilter[v] = true));
+        globalFilter[name] = valueFilter;
     }
 
     function removeValuesFromFilter(values: string[]) {
         values.forEach((v) => delete valueFilter[v]);
+        globalFilter[name] = valueFilter;
     }
 
     function matchesFilter(x: string) {
         return x.toLowerCase().trim().includes(filterText.toLowerCase().trim());
     }
 
-    function selectOnly(value: string) {
+    function selectOnly(ev: MouseEvent, value: string) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        console.log("selectOnly", value);
         setValuesInFilter(values.filter((y: string) => y !== value));
-        onchange(valueFilter);
+        // onchange(valueFilter);
     }
 
     function select(all: boolean) {
@@ -42,7 +51,6 @@
         return function (ev: MouseEvent) {
             ev.stopPropagation();
             func(values.filter(matchesFilter));
-            onchange(valueFilter);
         };
     }
     function init(node: HTMLElement) {
@@ -74,7 +82,7 @@
                 <p onclick={() => toggleValue(x)} class={x in valueFilter ? "" : "selected"}>
                     <!-- svelte-ignore a11y_missing_attribute -->
                     <!-- svelte-ignore a11y_click_events_have_key_events -->
-                    <a class="pvtOnly" onclick={() => selectOnly(x)} role="presentation"> only </a>
+                    <a class="pvtOnly" onclick={(ev) => selectOnly(ev, x)} role="presentation"> only </a>
                     <span class="pvtOnlySpacer">&nbsp;</span>
 
                     {#if x === ""}<em>null</em>{:else}{x}{/if}

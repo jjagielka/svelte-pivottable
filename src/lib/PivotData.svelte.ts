@@ -24,7 +24,7 @@ class PivotData {
         vals: [],
         aggregatorName: 'Count',
         sorters: {},
-        valueFilter: {},
+        valueFilter: {} as FitlerSet,
         rowOrder: 'key_a_to_z',
         colOrder: 'key_a_to_z',
         derivedAttributes: {},
@@ -46,7 +46,7 @@ class PivotData {
     aggregator: typeof aggregators["Average"];
 
     constructor(inputProps = {}) {
-        this.props = Object.assign({}, PivotData.defaultProps, objectMap(inputProps));
+        this.props = Object.assign({}, PivotData.defaultProps, inputProps);
 
         this.aggregator = this.props.aggregator(this.props.vals);
         this.tree = {};
@@ -67,7 +67,7 @@ class PivotData {
 
     filter(record: any) {
         for (const k in this.props.valueFilter) {
-            if (record[k] in this.props.valueFilter[k]) {
+            if (record[k] in (this.props.valueFilter[k] || {})) {
                 return false;
             }
         }

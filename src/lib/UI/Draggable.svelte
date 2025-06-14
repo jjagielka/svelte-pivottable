@@ -6,13 +6,14 @@
         handle, // query
         close,
         onclose,
-        onclick,
+        // onclick,
     } = $props();
 
     let left = $state(0);
     let top = $state(0);
 
     let moving = false;
+    let self: HTMLElement | undefined = $state();
 
     function onMouseDown() {
         moving = true;
@@ -36,15 +37,21 @@
             handleElem.removeEventListener("mousedown", onMouseDown, true);
         };
     }
+
+    function onclick(ev: MouseEvent) {
+        if (ev.target === self?.querySelector(close)) {
+            onclose(ev);
+        }
+    }
     // use:clickClose={close}
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <section
+    bind:this={self}
     {@attach init}
     style="left: {left}px; top: {top}px;"
     class={"draggable"}
-    {onclose}
     {onclick}
     role="presentation"
 >

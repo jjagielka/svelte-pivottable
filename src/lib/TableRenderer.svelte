@@ -82,7 +82,6 @@
     let colTotalColors = $state((v: number): string => "");
 
     let [rowKeys, colKeys]: string[][][] = $derived.by(() => {
-        console.log("small refresh");
         let rowKeys = pivotData.getRowKeys(true);
         let colKeys = pivotData.getColKeys(true);
 
@@ -98,7 +97,6 @@
     });
 
     $effect(() => {
-        console.log("big refresh");
         grouping = pivotData.props.grouping;
         useCompactRows = grouping && compactRows;
 
