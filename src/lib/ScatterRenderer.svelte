@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { Datum, Layout, PlotData } from "plotly.js";
-    import PivotData from "./PivotData.svelte";
+    import PivotData from "./PivotData";
     import Plotly from "./UI/Plotly.svelte";
 
     let { plotlyOptions = {}, plotlyConfig = {}, onRendererUpdate, ...restProps } = $props();

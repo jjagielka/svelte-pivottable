@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { Layout, PlotData } from "plotly.js";
-    import PivotData from "./PivotData.svelte";
+    import PivotData from "./PivotData";
     import Plotly from "./UI/Plotly.svelte";
 
     let {
@@ -12,9 +12,13 @@
         layoutOptions = {},
         transpose = false,
 
+        aggregatorName,
+        aggregators,
+
         ...restProps
     } = $props();
 
+    $inspect(restProps);
     let pivotData: PivotData,
         rowKeys: Datum[][],
         colKeys: Datum[][],
@@ -39,11 +43,9 @@
             datumKeys.push([]);
         }
 
-        let fullAggName = pivotData.props.aggregatorName;
-        numInputs =
-            pivotData.props.aggregators[fullAggName as keyof typeof pivotData.props.aggregators]([])().numInputs || 0;
+        numInputs = aggregators[aggregatorName as keyof typeof aggregators]([])().numInputs || 0;
         if (numInputs !== 0) {
-            fullAggName += ` of ${pivotData.props.vals.slice(0, numInputs).join(", ")}`;
+            aggregatorName += ` of ${pivotData.props.vals.slice(0, numInputs).join(", ")}`;
         }
         const dataTemp = traceKeys.map((traceKey) => {
             const values = [];
@@ -57,10 +59,10 @@
                 values.push(isFinite(val) ? val : null);
                 labels.push(datumKey.join("-") || " ");
             }
-            const trace: Partial<PlotData> = { name: traceKey.join("-") || fullAggName };
+            const trace: Partial<PlotData> = { name: traceKey.join("-") || aggregatorName };
             if (traceOptions.type === "pie") {
                 trace.values = values;
-                trace.labels = labels.length > 1 ? labels : [fullAggName];
+                trace.labels = labels.length > 1 ? labels : [aggregatorName];
             } else {
                 trace.x = transpose ? values : labels;
                 trace.y = transpose ? labels : values;
@@ -68,7 +70,7 @@
             return Object.assign(trace, traceOptions) as Partial<PlotData>;
         });
 
-        let titleText = fullAggName;
+        let titleText = aggregatorName;
         hAxisTitle = transpose ? pivotData.props.rows.join("-") : pivotData.props.cols.join("-");
         groupByTitle = transpose ? pivotData.props.cols.join("-") : pivotData.props.rows.join("-");
         if (hAxisTitle !== "") {
@@ -105,11 +107,11 @@
             }
         } else {
             layoutTemp.xaxis = {
-                title: transpose ? { text: fullAggName } : undefined,
+                title: transpose ? { text: aggregatorName } : undefined,
                 automargin: true,
             };
             layoutTemp.yaxis = {
-                title: transpose ? undefined : { text: fullAggName },
+                title: transpose ? undefined : { text: aggregatorName },
                 automargin: true,
             };
         }

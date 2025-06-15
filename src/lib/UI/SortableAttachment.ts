@@ -1,11 +1,13 @@
 
 import Sortable from "sortablejs";
+import { tick } from "svelte";
 
 export default function (options = {}, onchange: (v: (string | undefined)[]) => void) {
 
     const notify = (el: Element) => {
         const val = [...el.children].map((i) => (i as HTMLElement).dataset.id).filter(x => x);
         onchange(val);
+        console.log(val)
     }
 
 
@@ -18,7 +20,7 @@ export default function (options = {}, onchange: (v: (string | undefined)[]) => 
                 onUpdate: (ev) => notify(ev.to),
                 onAdd: (ev) => notify(ev.to),
                 onRemove: (ev) => notify(ev.from),
-                onEnd: (ev) => {
+                onEnd: async (ev) => {
                     // console.log(ev)
                     // cancel the UI update so Svelte will take care of it
                     if (ev.from !== ev.to) {
@@ -27,6 +29,8 @@ export default function (options = {}, onchange: (v: (string | undefined)[]) => 
                     if (ev.oldIndex !== undefined) {
                         ev.from.insertBefore(ev.item, ev.from.childNodes[(ev.oldIndex + 1) * 2 - 1]);
                     }
+
+                    await tick()
                     // items && updatePosition(items, e.oldIndex, e.newIndex, offset)
                 },
             });

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import PivotData from "./PivotData.svelte";
+    import PivotData from "./PivotData";
 
     let pivotData: PivotData,
         rowKeys: Datum[][],

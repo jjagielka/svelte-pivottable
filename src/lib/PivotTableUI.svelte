@@ -1,6 +1,6 @@
 <script lang="ts">
     import { setContext, type Component } from "svelte";
-    import PivotData from "./PivotData.svelte";
+    import PivotData from "./PivotData";
     import PivotTable from "./PivotTable.svelte";
     import TableRenderers from "./TableRenderers";
     import Aggregators from "./UI/Aggregators.svelte";
@@ -11,7 +11,7 @@
 
     let {
         rendererName = "Table",
-        renderers = TableRenderers as Record<string, Component>,
+        renderers = TableRenderers,
         aggregatorName = "Count",
         aggregators = defaultAggregators,
         hiddenAttributes = [],
@@ -32,7 +32,7 @@
         data,
 
         ...restProps
-    } = $props();
+    }: PivotTableUIProps = $props();
 
     let valueFilter: FitlerSet = $state({});
     setContext<FitlerSet>("valueFilter", valueFilter);
@@ -49,7 +49,7 @@
 
         let recordsProcessed = 0;
 
-        PivotData.forEachRecord(data, derivedAttributes, function (record: Record<string, any>) {
+        PivotData.forEachRecord(data ?? [], derivedAttributes, function (record: Record<string, any>) {
             for (const attr of Object.keys(record)) {
                 if (!(attr in attrValues)) {
                     attrValues[attr] = {};
@@ -109,7 +109,7 @@
             {aggregators}
             {valAttrs}
             onChange={(v: string) => (aggregatorName = v)}
-            onUpdate={(v: number[]) => (vals = v)}
+            onUpdate={(v: string[]) => (vals = v)}
             {vals}
         />
     {/snippet}
@@ -139,6 +139,8 @@
             {sorters}
             {compactRows}
             {valueFilter}
+            {aggregatorName}
+            {aggregators}
         />
     {/snippet}
 </MainTable>

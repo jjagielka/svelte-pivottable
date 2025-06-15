@@ -5,38 +5,17 @@ import { aggregators, getSort, naturalSort } from "./Utilities";
 
 // [1,2,3] -> [[1], [1,2], [1,2,3]]
 const subarrays = <T>(array: T[]) => array.map((d, i) => array.slice(0, i + 1));
-function subarrays1<T>(array: T[]): T[][] { return array.map((d, i) => array.slice(0, i + 1)) };
 
+const flatKey = (arr: Datum[]) => arr.join(String.fromCharCode(0));
 
 /*
 Data Model class
 */
-
-type Props = {
-    aggregators: Record<string, Function>;
-    cols: string[];
-    rows: string[];
-    vals: string[];
-    aggregatorName: string;
-    sorters: Record<string, Function>;
-    valueFilter: FitlerSet;
-    rowOrder: string;
-    colOrder: string;
-    derivedAttributes: Record<string, any>;
-    grouping: boolean;
-    rowGroupBefore: boolean;
-    colGroupBefore: boolean;
-    aggregator: (...args: any[]) => () => Aggregator;
-    data: Data[]
-}
-
 class PivotData {
-    static readonly defaultProps: Props = {
-        aggregators: aggregators,
+    static readonly defaultProps: PivotDataProps = {
         cols: [],
         rows: [],
         vals: [],
-        aggregatorName: 'Count',
         sorters: {},
         valueFilter: {},
         rowOrder: 'key_a_to_z',
@@ -57,10 +36,11 @@ class PivotData {
     colTotals: Record<string, Aggregator>;
     allTotal: Aggregator;
     sorted: boolean;
-    aggregator: typeof aggregators["Average"];
+    aggregator: typeof aggregators["Count"];
 
     constructor(inputProps = {}) {
         this.props = Object.assign({}, PivotData.defaultProps, inputProps);
+        this.props.aggregator = PivotData.defaultProps.aggregator;
 
         this.aggregator = this.props.aggregator(this.props.vals);
         this.tree = {};
@@ -176,10 +156,10 @@ class PivotData {
         this.allTotal.push(record);
 
         for (const rowKey of rowKeys) {
-            const flatRowKey = rowKey.join(String.fromCharCode(0));
+            const flatRowKey = flatKey(rowKey);
 
             for (const colKey of colKeys) {
-                const flatColKey = colKey.join(String.fromCharCode(0));
+                const flatColKey = flatKey(colKey);
 
                 if (rowKey.length !== 0) {
                     if (!this.rowTotals[flatRowKey]) {
@@ -216,8 +196,8 @@ class PivotData {
     getAggregator(rowKey: Datum[], colKey: Datum[]): Aggregator {
         let agg;
 
-        const flatRowKey = rowKey.join(String.fromCharCode(0));
-        const flatColKey = colKey.join(String.fromCharCode(0));
+        const flatRowKey = flatKey(rowKey);
+        const flatColKey = flatKey(colKey);
 
         if (rowKey.length === 0 && colKey.length === 0) {
             agg = this.allTotal;
@@ -242,7 +222,7 @@ class PivotData {
 
 
     // can handle arrays or jQuery selections of tables
-    static forEachRecord(input: Data[] | Function, derivedAttributes: DerivedAttrs, func: (record: Data) => void) {
+    static forEachRecord(input: Data[] | Datum[][] | Function, derivedAttributes: DerivedAttrs, func: (record: Data) => void) {
         let addRecord;
         if (Object.getOwnPropertyNames(derivedAttributes).length === 0) {
             addRecord = func;
@@ -279,9 +259,9 @@ class PivotData {
                     //     }
                     // }
 
-                    const headers = input[0];
+                    const headers = input[0] as (string | number)[];
                     for (let i = 1; i < input.length; i++) {
-                        const compactRecord = input[i];
+                        const compactRecord: Datum[] = input[i] as Datum[];
 
                         const record: Data = {};
                         for (let j = 0; j < headers.length; j++) {
@@ -295,7 +275,7 @@ class PivotData {
             }
 
             // array of objects
-            return Array.from(input).map(addRecord);
+            return Array.from(input as Data[]).map(addRecord);
         }
         throw new Error('unknown input format');
     };

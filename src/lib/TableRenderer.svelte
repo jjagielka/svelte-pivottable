@@ -1,5 +1,5 @@
 <script lang="ts">
-    import PivotData from "./PivotData.svelte";
+    import PivotData from "./PivotData";
     import "./pivottable.css";
     import "./grouping.css";
 
@@ -10,7 +10,7 @@
 
         opts = {},
         ...restProps
-    } = $props();
+    }: TableRendererProps = $props();
 
     let pivotData = $state.raw(new PivotData(restProps));
     $effect(() => {
@@ -133,28 +133,27 @@
 
     const clickClass = (pred: boolean, closed: boolean) => (pred ? " pvtClickable" + (closed ? " closed" : "") : "");
 
-    let getClickHandler = $derived(
-        tableOptions && tableOptions.clickCallback
-            ? (value: Datum, rowValues: Datum[], colValues: Datum[]) => {
-                  const filters: Data = {};
-                  //   for (const i of Object.keys(pivotData.props.cols || {})) {
-                  for (const i in pivotData.props.cols || []) {
-                      const attr = pivotData.props.cols[i];
-                      if (colValues[i] !== null) {
-                          filters[attr] = colValues[i];
-                      }
-                  }
-                  //   for (const i of Object.keys(pivotData.props.rows || {})) {
-                  for (const i in pivotData.props.rows || []) {
-                      const attr = pivotData.props.rows[i];
-                      if (rowValues[i] !== null) {
-                          filters[attr] = rowValues[i];
-                      }
-                  }
-                  return (e: MouseEvent) => tableOptions.clickCallback(e, value, filters, pivotData);
-              }
-            : null,
-    );
+    let getClickHandler = $derived.by(() => {
+        if (tableOptions && tableOptions.clickCallback) {
+            return (value: Datum, rowValues: Datum[], colValues: Datum[]) => {
+                const filters: Data = {};
+                for (const i in pivotData.props.cols || []) {
+                    const attr = pivotData.props.cols[i];
+                    if (colValues[i] !== null) {
+                        filters[attr] = colValues[i];
+                    }
+                }
+                for (const i in pivotData.props.rows || []) {
+                    const attr = pivotData.props.rows[i];
+                    if (rowValues[i] !== null) {
+                        filters[attr] = rowValues[i];
+                    }
+                }
+
+                return (e: MouseEvent) => tableOptions.clickCallback?.(e, value, filters, pivotData);
+            };
+        }
+    });
 </script>
 
 <table
