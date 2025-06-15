@@ -6,8 +6,8 @@
     let { plotlyOptions = {}, plotlyConfig = {}, onRendererUpdate, ...restProps } = $props();
 
     let pivotData: PivotData,
-        rowKeys: string[][],
-        colKeys: string[][],
+        rowKeys: Datum[][],
+        colKeys: Datum[][],
         layout: Partial<Layout> = $state.raw({}),
         data: Partial<PlotData> = $state.raw({ type: "scatter", mode: "markers" });
 
@@ -32,7 +32,7 @@
                 if (v !== null) {
                     data.x.push(colKey.join("-"));
                     data.y.push(rowKey.join("-"));
-                    data.text.push(v);
+                    data.text.push(String(v));
                 }
             }
         }

@@ -16,10 +16,10 @@
     } = $props();
 
     let pivotData: PivotData,
-        rowKeys: string[][],
-        colKeys: string[][],
-        traceKeys: string[][],
-        datumKeys: string[][],
+        rowKeys: Datum[][],
+        colKeys: Datum[][],
+        traceKeys: Datum[][],
+        datumKeys: Datum[][],
         numInputs: number,
         data: Partial<PlotData>[] = $state.raw([]),
         hAxisTitle,
@@ -50,7 +50,9 @@
             const labels = [];
             for (const datumKey of datumKeys) {
                 const val = parseFloat(
-                    pivotData.getAggregator(transpose ? datumKey : traceKey, transpose ? traceKey : datumKey).value(),
+                    pivotData
+                        .getAggregator(transpose ? datumKey : traceKey, transpose ? traceKey : datumKey)
+                        .value() as string,
                 );
                 values.push(isFinite(val) ? val : null);
                 labels.push(datumKey.join("-") || " ");

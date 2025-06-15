@@ -10,44 +10,13 @@
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 
-const addSeparators = function (nStr, thousandsSep, decimalSep) {
-    const x = String(nStr).split('.');
-    let x1 = x[0];
-    const x2 = x.length > 1 ? decimalSep + x[1] : '';
-    const rgx = /(\d+)(\d{3})/;
-    while (rgx.test(x1)) {
-        x1 = x1.replace(rgx, `$1${thousandsSep}$2`);
-    }
-    return x1 + x2;
-};
+import { fmt, fmtInt, fmtPct } from "./formatters";
 
-const numberFormat = function (opts_in) {
-    const defaults = {
-        digitsAfterDecimal: 2,
-        scaler: 1,
-        thousandsSep: ',',
-        decimalSep: '.',
-        prefix: '',
-        suffix: '',
-    };
-    const opts = Object.assign({}, defaults, opts_in);
-    return function (x) {
-        if (isNaN(x) || !isFinite(x)) {
-            return '';
-        }
-        const result = addSeparators(
-            (opts.scaler * x).toFixed(opts.digitsAfterDecimal),
-            opts.thousandsSep,
-            opts.decimalSep
-        );
-        return `${opts.prefix}${result}${opts.suffix}`;
-    };
-};
 
 const rx = /(\d+)|(\D+)/g;
 const rd = /\d/;
 const rz = /^0/;
-const naturalSort = (as = null, bs = null, nulls_first = true) => {
+const naturalSort = (as: Datum = null, bs: Datum = null, nulls_first: boolean = true) => {
     // nulls first or last
     if (bs !== null && as === null) {
         return nulls_first ? -1 : 1;
@@ -169,17 +138,9 @@ const getSort = function (sorters, attr) {
     return naturalSort;
 };
 
-// aggregator templates default to US number formatting but this is overrideable
-const usFmt = numberFormat();
-const usFmtInt = numberFormat({ digitsAfterDecimal: 0 });
-const usFmtPct = numberFormat({
-    digitsAfterDecimal: 1,
-    scaler: 100,
-    suffix: '%',
-});
 
 const aggregatorTemplates = {
-    count(formatter = usFmtInt) {
+    count(formatter = fmtInt) {
         return () =>
             function () {
                 return {
@@ -195,7 +156,7 @@ const aggregatorTemplates = {
             };
     },
 
-    uniques(fn, formatter = usFmtInt) {
+    uniques(fn, formatter = fmtInt) {
         return function ([attr]) {
             return function () {
                 return {
@@ -215,7 +176,7 @@ const aggregatorTemplates = {
         };
     },
 
-    sum(formatter = usFmt) {
+    sum(formatter = fmt) {
         return function ([attr]) {
             return function () {
                 return {
@@ -235,7 +196,7 @@ const aggregatorTemplates = {
         };
     },
 
-    extremes(mode, formatter = usFmt) {
+    extremes(mode, formatter = fmt) {
         return function ([attr]) {
             return function (data) {
                 return {
@@ -271,7 +232,7 @@ const aggregatorTemplates = {
         };
     },
 
-    quantile(q, formatter = usFmt) {
+    quantile(q, formatter = fmt) {
         return function ([attr]) {
             return function () {
                 return {
@@ -297,7 +258,7 @@ const aggregatorTemplates = {
         };
     },
 
-    runningStat(mode = 'mean', ddof = 1, formatter = usFmt) {
+    runningStat(mode = 'mean', ddof = 1, formatter = fmt) {
         return function ([attr]) {
             return function () {
                 return {
@@ -343,7 +304,7 @@ const aggregatorTemplates = {
         };
     },
 
-    sumOverSum(formatter = usFmt) {
+    sumOverSum(formatter = fmt) {
         return function ([num, denom]) {
             return function () {
                 return {
@@ -367,7 +328,7 @@ const aggregatorTemplates = {
         };
     },
 
-    fractionOf(wrapped, type = 'total', formatter = usFmtPct) {
+    fractionOf(wrapped, type = 'total', formatter = fmtPct) {
         return (...x) =>
             function (data, rowKey, colKey) {
                 return {
@@ -406,26 +367,26 @@ aggregatorTemplates.stdev = (ddof, f) => aggregatorTemplates.runningStat('stdev'
 
 // default aggregators & renderers use US naming and number formatting
 const aggregators = ((tpl) => ({
-    Count: tpl.count(usFmtInt),
-    'Count Unique Values': tpl.countUnique(usFmtInt),
+    Count: tpl.count(fmtInt),
+    'Count Unique Values': tpl.countUnique(fmtInt),
     'List Unique Values': tpl.listUnique(', '),
-    Sum: tpl.sum(usFmt),
-    'Integer Sum': tpl.sum(usFmtInt),
-    Average: tpl.average(usFmt),
-    Median: tpl.median(usFmt),
-    'Sample Variance': tpl.var(1, usFmt),
-    'Sample Standard Deviation': tpl.stdev(1, usFmt),
-    Minimum: tpl.min(usFmt),
-    Maximum: tpl.max(usFmt),
-    First: tpl.first(usFmt),
-    Last: tpl.last(usFmt),
-    'Sum over Sum': tpl.sumOverSum(usFmt),
-    'Sum as Fraction of Total': tpl.fractionOf(tpl.sum(), 'total', usFmtPct),
-    'Sum as Fraction of Rows': tpl.fractionOf(tpl.sum(), 'row', usFmtPct),
-    'Sum as Fraction of Columns': tpl.fractionOf(tpl.sum(), 'col', usFmtPct),
-    'Count as Fraction of Total': tpl.fractionOf(tpl.count(), 'total', usFmtPct),
-    'Count as Fraction of Rows': tpl.fractionOf(tpl.count(), 'row', usFmtPct),
-    'Count as Fraction of Columns': tpl.fractionOf(tpl.count(), 'col', usFmtPct),
+    Sum: tpl.sum(fmt),
+    'Integer Sum': tpl.sum(fmtInt),
+    Average: tpl.average(fmt),
+    Median: tpl.median(fmt),
+    'Sample Variance': tpl.var(1, fmt),
+    'Sample Standard Deviation': tpl.stdev(1, fmt),
+    Minimum: tpl.min(fmt),
+    Maximum: tpl.max(fmt),
+    First: tpl.first(fmt),
+    Last: tpl.last(fmt),
+    'Sum over Sum': tpl.sumOverSum(fmt),
+    'Sum as Fraction of Total': tpl.fractionOf(tpl.sum(), 'total', fmtPct),
+    'Sum as Fraction of Rows': tpl.fractionOf(tpl.sum(), 'row', fmtPct),
+    'Sum as Fraction of Columns': tpl.fractionOf(tpl.sum(), 'col', fmtPct),
+    'Count as Fraction of Total': tpl.fractionOf(tpl.count(), 'total', fmtPct),
+    'Count as Fraction of Rows': tpl.fractionOf(tpl.count(), 'row', fmtPct),
+    'Count as Fraction of Columns': tpl.fractionOf(tpl.count(), 'col', fmtPct),
 }))(aggregatorTemplates);
 
 const locales = {
@@ -499,7 +460,6 @@ export {
     derivers,
     locales,
     naturalSort,
-    numberFormat,
     getSort,
     sortAs,
 };

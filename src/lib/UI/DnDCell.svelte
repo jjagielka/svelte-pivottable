@@ -3,7 +3,7 @@
     import DraggableAttribute from "./DraggableAttribute.svelte";
     import sortableAttachment from "./SortableAttachment";
 
-    let { items, onChange, attrValues, sorters, menuLimit, onUpdate } = $props();
+    let { items, onChange, attrValues, sorters, menuLimit } = $props();
 
     const options = {
         group: "shared",
@@ -11,7 +11,7 @@
         filter: ".pvtFilterBox",
         preventOnFilter: false,
         revertOnSpill: true, // Enable plugin
-        removeOnSpill: false, // Enable plugin
+        removeOnSpill: false, // Disable plugin
     };
 
     function getAttrValues(x: string) {

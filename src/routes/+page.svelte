@@ -1,11 +1,11 @@
 <script lang="ts">
     import PivotTableUI from "$lib/PivotTableUI.svelte";
-    import data from "./_montreal.json";
-    import { derivers } from "$lib/Utilities";
-    import TableRenderers from "$lib/TableRenderers";
     import PlotlyRenderers from "$lib/PlotlyRenderers";
+    import TableRenderers from "$lib/TableRenderers";
+    import { derivers } from "$lib/Utilities";
     import { onMount } from "svelte";
-    import Plotly from "$lib/UI/Plotly.svelte";
+    // import data from "./_montreal.json";
+    import data from "./_data";
 
     let plotlyRenderers = {};
     let renderers = $state({});
@@ -35,10 +35,12 @@
     };
 
     let options = {
-        rows: ["Province", "Party"],
-        cols: ["Gender", "Age Bin"],
+        // rows: ["Province", "Party"],
+        rows: ["gender", "birthday"],
+        // cols: ["Gender", "Age Bin"],
+        cols: ["colour", "successes"],
         data,
-        derivedAttributes,
+        // derivedAttributes,
         hiddenFromAggregators: ["Province", "Party"],
     };
 </script>

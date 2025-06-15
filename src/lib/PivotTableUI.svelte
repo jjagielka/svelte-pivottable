@@ -119,36 +119,15 @@
     {/snippet}
 
     {#snippet unusedAttrsCell()}
-        <DnDCell
-            {sorters}
-            {attrValues}
-            items={unusedAttrs}
-            onChange={(order: string[]) => (unusedOrder = order)}
-            {onUpdate}
-            {menuLimit}
-        />
+        <DnDCell {sorters} {attrValues} items={unusedAttrs} onChange={(v: string[]) => (unusedOrder = v)} {menuLimit} />
     {/snippet}
 
     {#snippet colAttrsCell()}
-        <DnDCell
-            {sorters}
-            {attrValues}
-            items={colAttrs}
-            onChange={(v: string[]) => (cols = v)}
-            {onUpdate}
-            {menuLimit}
-        />
+        <DnDCell {sorters} {attrValues} items={colAttrs} onChange={(v: string[]) => (cols = v)} {menuLimit} />
     {/snippet}
 
     {#snippet rowAttrsCell()}
-        <DnDCell
-            {sorters}
-            {attrValues}
-            items={rowAttrs}
-            onChange={(v: string[]) => (rows = v)}
-            {onUpdate}
-            {menuLimit}
-        />
+        <DnDCell {sorters} {attrValues} items={rowAttrs} onChange={(v: string[]) => (rows = v)} {menuLimit} />
     {/snippet}
 
     {#snippet outputCell()}

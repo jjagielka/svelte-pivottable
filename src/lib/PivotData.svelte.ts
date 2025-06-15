@@ -1,47 +1,61 @@
+
 import { aggregators, getSort, naturalSort } from "./Utilities";
+
+
 
 // [1,2,3] -> [[1], [1,2], [1,2,3]]
 const subarrays = <T>(array: T[]) => array.map((d, i) => array.slice(0, i + 1));
 function subarrays1<T>(array: T[]): T[][] { return array.map((d, i) => array.slice(0, i + 1)) };
 
-// returns a new object with the values at each key mapped using mapFn(value)
-function objectMap(object) {
-    return Object.keys(object).reduce(function (result, key) {
-        result[key] = object[key]
-        return result
-    }, {})
-}
 
 /*
 Data Model class
 */
 
+type Props = {
+    aggregators: Record<string, Function>;
+    cols: string[];
+    rows: string[];
+    vals: string[];
+    aggregatorName: string;
+    sorters: Record<string, Function>;
+    valueFilter: FitlerSet;
+    rowOrder: string;
+    colOrder: string;
+    derivedAttributes: Record<string, any>;
+    grouping: boolean;
+    rowGroupBefore: boolean;
+    colGroupBefore: boolean;
+    aggregator: (...args: any[]) => () => Aggregator;
+    data: Data[]
+}
+
 class PivotData {
-    static readonly defaultProps = {
+    static readonly defaultProps: Props = {
         aggregators: aggregators,
         cols: [],
         rows: [],
         vals: [],
         aggregatorName: 'Count',
         sorters: {},
-        valueFilter: {} as FitlerSet,
+        valueFilter: {},
         rowOrder: 'key_a_to_z',
         colOrder: 'key_a_to_z',
         derivedAttributes: {},
         grouping: false,
         rowGroupBefore: true,
         colGroupBefore: false,
-        aggregator: aggregators["Count as Fraction of Columns"],
+        aggregator: aggregators["Count"],
         data: []
     }
 
     props: typeof PivotData.defaultProps;
-    rowKeys: string[][];
-    colKeys: string[][];
-    tree: Record<string, Record<string, any[]>>;
-    rowTotals: Record<string, any>;
-    colTotals: Record<string, any>;
-    allTotal: any[];
+    rowKeys: Datum[][];
+    colKeys: Datum[][];
+    tree: Record<string, Record<string, Aggregator>>;
+    rowTotals: Record<string, Aggregator>;
+    colTotals: Record<string, Aggregator>;
+    allTotal: Aggregator;
     sorted: boolean;
     aggregator: typeof aggregators["Average"];
 
@@ -58,15 +72,16 @@ class PivotData {
         this.sorted = false;
 
         // iterate through input, accumulating data for cells
-        PivotData.forEachRecord(this.props.data, this.props.derivedAttributes, (record: any) => {
+        PivotData.forEachRecord(this.props.data, this.props.derivedAttributes, (record: Data) => {
             if (this.filter(record)) {
                 this.processRecord(record);
             }
         });
     }
 
-    filter(record: any) {
+    filter(record: Data) {
         for (const k in this.props.valueFilter) {
+            /* @ts-ignore */
             if (record[k] in (this.props.valueFilter[k] || {})) {
                 return false;
             }
@@ -74,8 +89,8 @@ class PivotData {
         return true;
     }
 
-    forEachMatchingRecord(criteria, callback) {
-        return PivotData.forEachRecord(this.props.data, this.props.derivedAttributes, (record) => {
+    forEachMatchingRecord(criteria: Record<string, Datum>, callback: (x: Data) => void) {
+        return PivotData.forEachRecord(this.props.data, this.props.derivedAttributes, (record: Data) => {
             if (!this.filter(record)) {
                 return;
             }
@@ -89,20 +104,14 @@ class PivotData {
         });
     }
 
-    arrSort(attrs, nulls_first: boolean) {
-        let a;
-        const sortersArr = (() => {
-            const result = [];
-            for (a of Array.from(attrs)) {
-                result.push(getSort(this.props.sorters, a));
-            }
-            return result;
-        })();
-        // Why not .map above?
-        // const sortersArr = Array.from(attrs).map(a => getSort(this.props.sorters, a));
-        return function (a, b) {
-            for (const i of Object.keys(sortersArr || {})) {
-                const sorter = sortersArr[i];
+    arrSort(attrs: string[], nulls_first: boolean) {
+        const sortersArr = Array.from(attrs).map((a) => getSort(this.props.sorters, a));
+
+        return function (a: Values, b: Values) {
+            // Why that was used here?
+            // for (const i of Object.keys(sortersArr || {})) {
+            for (const i in sortersArr || []) {
+                const sorter = sortersArr[+i];
                 const comparison = sorter(a[i], b[i], nulls_first);
                 if (comparison !== 0) {
                     return comparison;
@@ -115,7 +124,7 @@ class PivotData {
     sortKeys() {
         if (!this.sorted) {
             this.sorted = true;
-            const v = (r, c) => this.getAggregator(r, c).value();
+            const v = (r: Datum[], c: Datum[]) => this.getAggregator(r, c).value();
             switch (this.props.rowOrder) {
                 case 'value_a_to_z':
                     this.rowKeys.sort((a, b) => naturalSort(v(a, []), v(b, [])));
@@ -149,19 +158,20 @@ class PivotData {
         return all_keys ? this.rowKeys : this.rowKeys.filter((x) => x.length === this.props.rows.length);
     }
 
-    processRecord(record) {
+    processRecord(record: Data) {
+
         // this code is called in a tight loop
-        let colKeys = [];
-        let rowKeys = [];
+        let _colKeys: Datum[] = [];
+        let _rowKeys: Datum[] = [];
         for (const x of Array.from(this.props.cols)) {
-            colKeys.push(x in record ? record[x] : 'null');
+            _colKeys.push(x in record ? record[x] : 'null');
         }
         for (const x of Array.from(this.props.rows)) {
-            rowKeys.push(x in record ? record[x] : 'null');
+            _rowKeys.push(x in record ? record[x] : 'null');
         }
 
-        colKeys = this.props.grouping ? subarrays(colKeys) : [colKeys];
-        rowKeys = this.props.grouping ? subarrays(rowKeys) : [rowKeys];
+        let colKeys = this.props.grouping ? subarrays(_colKeys) : [_colKeys];
+        let rowKeys = this.props.grouping ? subarrays(_rowKeys) : [_rowKeys];
 
         this.allTotal.push(record);
 
@@ -203,8 +213,7 @@ class PivotData {
             }
         }
     }
-
-    getAggregator(rowKey: string[], colKey: string[]) {
+    getAggregator(rowKey: Datum[], colKey: Datum[]): Aggregator {
         let agg;
 
         const flatRowKey = rowKey.join(String.fromCharCode(0));
@@ -233,20 +242,19 @@ class PivotData {
 
 
     // can handle arrays or jQuery selections of tables
-    static forEachRecord(input, derivedAttributes, f) {
-        let addRecord, record;
-        // if (Object.getOwnPropertyNames(derivedAttributes).length === 0) {
-        if (Object.keys(derivedAttributes).length === 0) {
-            addRecord = f;
+    static forEachRecord(input: Data[] | Function, derivedAttributes: DerivedAttrs, func: (record: Data) => void) {
+        let addRecord;
+        if (Object.getOwnPropertyNames(derivedAttributes).length === 0) {
+            addRecord = func;
         } else {
-            addRecord = function (record: Record<string, number>) {
+            addRecord = function (record: Data) {
                 for (const k in derivedAttributes) {
                     const derived = derivedAttributes[k](record);
                     if (derived !== null) {
                         record[k] = derived;
                     }
                 }
-                return f(record);
+                return func(record);
             };
         }
 
@@ -258,16 +266,29 @@ class PivotData {
                 // array of arrays
                 return (() => {
                     const result = [];
-                    for (const i of Object.keys(input || {})) {
+                    // this the original - super safe ??
+                    // for (const i of Object.keys(input || {})) {
+                    //     const compactRecord = input[i];
+                    //     if (+i > 0) {
+                    //         const record: Data = {};
+                    //         for (const j of Object.keys(input[0] || {})) {
+                    //             const k = input[0][j];
+                    //             record[k] = compactRecord[j];
+                    //         }
+                    //         result.push(addRecord(record));
+                    //     }
+                    // }
+
+                    const headers = input[0];
+                    for (let i = 1; i < input.length; i++) {
                         const compactRecord = input[i];
-                        if (+i > 0) {
-                            record = {};
-                            for (const j of Object.keys(input[0] || {})) {
-                                const k = input[0][j];
-                                record[k] = compactRecord[j];
-                            }
-                            result.push(addRecord(record));
+
+                        const record: Data = {};
+                        for (let j = 0; j < headers.length; j++) {
+                            const k = headers[j];
+                            record[k] = compactRecord[j];
                         }
+                        result.push(addRecord(record));
                     }
                     return result;
                 })();
@@ -275,13 +296,6 @@ class PivotData {
 
             // array of objects
             return Array.from(input).map(addRecord);
-            // return (() => {
-            //     const result1 = [];
-            //     for (record of Array.from(input)) {
-            //         result1.push(addRecord(record));
-            //     }
-            //     return result1;
-            // })();
         }
         throw new Error('unknown input format');
     };
