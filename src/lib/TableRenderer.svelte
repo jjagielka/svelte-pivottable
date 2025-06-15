@@ -79,7 +79,6 @@
     let colTotalColors = $state((v: Datum): string => "");
 
     let [rowKeys, colKeys]: Datum[][][] = $derived.by(() => {
-        console.log("row cols");
         let rowKeys = pivotData.getRowKeys(true);
         let colKeys = pivotData.getColKeys(true);
 
@@ -90,13 +89,11 @@
                 rowKeys = rowKeys.filter((rowKey) => !flatKey(rowKey).startsWith(keyEx));
             }
         }
-        console.log("row cols end");
         return [rowKeys, colKeys];
     });
 
     $effect(() => {
         if (opts.heatmapMode) {
-            console.log("head map mode");
             const dataRowKeys = pivotData.getRowKeys(false);
             const dataColKeys = pivotData.getColKeys(false);
 

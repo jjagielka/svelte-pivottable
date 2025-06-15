@@ -40,7 +40,6 @@ class PivotData {
 
     constructor(inputProps = {}) {
         this.props = Object.assign({}, PivotData.defaultProps, inputProps);
-        this.props.aggregator = PivotData.defaultProps.aggregator;
 
         this.aggregator = this.props.aggregator(this.props.vals);
         this.tree = {};
