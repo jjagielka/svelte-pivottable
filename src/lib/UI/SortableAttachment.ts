@@ -19,19 +19,20 @@ export default function (options = {}, onchange: (v: (string | undefined)[]) => 
                 onAdd: (ev) => notify(ev.to),
                 onRemove: (ev) => notify(ev.from),
                 onEnd: (ev) => {
+                    // console.log(ev)
                     // cancel the UI update so Svelte will take care of it
                     if (ev.from !== ev.to) {
-                        ev.item.remove();
                     }
-                    // if (ev.oldIndex !== undefined) {
-                    //     ev.from.insertBefore(ev.item, ev.from.childNodes[(ev.oldIndex + 1) * 2 - 1]);
-                    // }
+                    ev.item.remove();
+                    if (ev.oldIndex !== undefined) {
+                        ev.from.insertBefore(ev.item, ev.from.childNodes[(ev.oldIndex + 1) * 2 - 1]);
+                    }
                     // items && updatePosition(items, e.oldIndex, e.newIndex, offset)
                 },
             });
 
             // Temporary node removal
-            // node.parentElement.removeChild(node);
+            node.parentElement.removeChild(node);
 
             return () => sortable?.destroy();
         }

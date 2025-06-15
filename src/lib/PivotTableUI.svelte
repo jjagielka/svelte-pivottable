@@ -27,6 +27,7 @@
         vals = PivotData.defaultProps.vals,
         sorters = PivotData.defaultProps.sorters,
 
+        compactRows = true,
         // pivot data
         data,
 
@@ -95,11 +96,6 @@
             (aggregatorName in aggregators ? aggregatorName : firstKey(aggregators)) as keyof typeof aggregators
         ],
     );
-
-    function onUpdate(v: object) {
-        console.log("onUpdate", v);
-        // valueFilter = v;
-    }
 </script>
 
 <MainTable {horizUnused}>
@@ -141,6 +137,7 @@
             {aggregator}
             {data}
             {sorters}
+            {compactRows}
             {valueFilter}
         />
     {/snippet}

@@ -34,7 +34,7 @@
     };
 
     let options = {
-        rows: ["Province", "Party"],
+        rows: ["Province", "Party", "Name1"],
         cols: ["Gender", "Age Bin"],
         data,
         derivedAttributes,

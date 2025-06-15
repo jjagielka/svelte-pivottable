@@ -13,7 +13,7 @@
     const toggleOpen = () => (open = !open);
 </script>
 
-<li data-id={name}>
+<li data-id={name} class="handle">
     <span class={`pvtAttr ${is_empty ? "" : "pvtFilteredAttribute"}`}>
         {name}
         <span class="pvtTriangle" onclick={toggleOpen} onkeypress={toggleOpen} role="presentation">

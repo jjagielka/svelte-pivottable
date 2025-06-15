@@ -1,7 +1,7 @@
 <script lang="ts">
-    import "./grouping.css";
     import PivotData from "./PivotData.svelte";
     import "./pivottable.css";
+    import "./grouping.css";
 
     let {
         tableColorScaleGenerator = redColorScaleGenerator,
@@ -66,12 +66,9 @@
     const remove = (set: Set<string>, arr: string[]) => (arr.forEach(set.delete, set), set);
     const toggle = (set: Set<string>, arr: string[]) => (has(set, arr) ? remove : add)(set, arr);
 
-    // let colAttrs = $derived(pivotData.props.cols);
-    // let rowAttrs = $derived(pivotData.props.rows);
     let grandTotalAggregator = $derived(pivotData.getAggregator([], []));
 
-    let grouping = $state(false);
-    let useCompactRows = $state(false);
+    let grouping = $derived(pivotData.props.grouping);
 
     let folded = $state.raw(new Set<string>());
     const isFolded = (keys: Datum[][]) => has(folded, keys.map(flatKey));
@@ -82,6 +79,7 @@
     let colTotalColors = $state((v: Datum): string => "");
 
     let [rowKeys, colKeys]: Datum[][][] = $derived.by(() => {
+        console.log("row cols");
         let rowKeys = pivotData.getRowKeys(true);
         let colKeys = pivotData.getColKeys(true);
 
@@ -92,15 +90,13 @@
                 rowKeys = rowKeys.filter((rowKey) => !flatKey(rowKey).startsWith(keyEx));
             }
         }
-
+        console.log("row cols end");
         return [rowKeys, colKeys];
     });
 
     $effect(() => {
-        grouping = pivotData.props.grouping;
-        useCompactRows = grouping && compactRows;
-
         if (opts.heatmapMode) {
+            console.log("head map mode");
             const dataRowKeys = pivotData.getRowKeys(false);
             const dataColKeys = pivotData.getColKeys(false);
 
@@ -164,9 +160,9 @@
 <table
     class={[
         "pvtTable",
-        grouping ? (pivotData.props.rowGroupBefore ? "rowGroupBefore" : "rowGroupAfter") : "",
-        grouping ? (pivotData.props.colGroupBefore ? "colGroupBefore" : "colGroupAfter") : "",
-    ].join(" ")}
+        grouping && (pivotData.props.rowGroupBefore ? "rowGroupBefore" : "rowGroupAfter"),
+        grouping && (pivotData.props.colGroupBefore ? "colGroupBefore" : "colGroupAfter"),
+    ]}
 >
     <thead>
         {#each pivotData.props.cols as c, j (`col-Attr${j}`)}
@@ -233,6 +229,7 @@
         {#each rowKeys as rowKey, i (`rowKeyRow${i}`)}
             {@const totalAggregator = pivotData.getAggregator(rowKey, [])}
             {@const rowGap = pivotData.props.rows.length - rowKey.length}
+            {@const useCompactRows = grouping && compactRows}
 
             <tr class={rowGap ? "pvtLevel" + rowGap : "pvtData"}>
                 {#each rowKey as txt, j (`rowKeyLabel${i}-${j}`)}
