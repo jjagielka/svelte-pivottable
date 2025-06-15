@@ -11,6 +11,7 @@
  */
 
 import { fmt, fmtInt, fmtPct } from "./formatters";
+import type PivotData from "./PivotData.svelte";
 
 
 const rx = /(\d+)|(\D+)/g;
@@ -73,14 +74,14 @@ const naturalSort = (as: Datum = null, bs: Datum = null, nulls_first: boolean = 
     }
 
     // special treatment for strings containing digits
-    a = a.match(rx);
-    b = b.match(rx);
+    let am = a.match(rx) ?? [];
+    let bm = b.match(rx) ?? [];
     while (a.length && b.length) {
-        const a1 = a.shift();
-        const b1 = b.shift();
+        const a1 = am.shift() ?? "";
+        const b1 = bm.shift() ?? "";
         if (a1 !== b1) {
             if (rd.test(a1) && rd.test(b1)) {
-                return a1.replace(rz, '.0') - b1.replace(rz, '.0');
+                return parseFloat(a1.replace(rz, '.0')) - parseFloat(b1.replace(rz, '.0'));
             }
             return a1 > b1 ? 1 : -1;
         }
@@ -89,24 +90,26 @@ const naturalSort = (as: Datum = null, bs: Datum = null, nulls_first: boolean = 
 };
 
 const sortAs = function (order: string[]) {
-    const mapping: Record<string, string> = {};
+    const mapping: Record<string, number> = {};
 
     // sort lowercased keys similarly
-    const l_mapping: Record<string, string> = {};
+    const l_mapping: Record<string, number> = {};
     for (const i in order) {
         const x = order[i];
-        mapping[x] = i;
+        mapping[x] = +i;
         if (typeof x === 'string') {
-            l_mapping[x.toLowerCase()] = i;
+            l_mapping[x.toLowerCase()] = +i;
         }
     }
     return function (a: string | null = null, b: string | null = null, nulls_first = true) {
-        if (b !== null && a === null) {
+        if (b === null && a === null) {
+            return 0;
+        } else if (a === null) {
             return nulls_first ? -1 : 1;
-        }
-        if (a !== null && b === null) {
+        } else if (b === null) {
             return nulls_first ? 1 : -1;
         }
+
         if (a in mapping && b in mapping) {
             return mapping[a] - mapping[b];
         } else if (a in mapping) {
@@ -124,7 +127,7 @@ const sortAs = function (order: string[]) {
     };
 };
 
-const getSort = function (sorters, attr) {
+const getSort = function (sorters: Record<string, Function> | Function | null, attr: string) {
     if (sorters) {
         if (typeof sorters === 'function') {
             const sort = sorters(attr);
@@ -139,7 +142,7 @@ const getSort = function (sorters, attr) {
 };
 
 
-const aggregatorTemplates = {
+const aggregatorTemplates: Record<string, Function> = {
     count(formatter = fmtInt) {
         return () =>
             function () {
@@ -156,12 +159,12 @@ const aggregatorTemplates = {
             };
     },
 
-    uniques(fn, formatter = fmtInt) {
-        return function ([attr]) {
+    uniques(fn: (x: Datum[]) => Datum, formatter = fmtInt) {
+        return function ([attr]: string[]) {
             return function () {
                 return {
-                    uniq: [],
-                    push(record) {
+                    uniq: [] as Datum[],
+                    push(record: Data) {
                         if (!Array.from(this.uniq).includes(record[attr])) {
                             this.uniq.push(record[attr]);
                         }
@@ -177,13 +180,13 @@ const aggregatorTemplates = {
     },
 
     sum(formatter = fmt) {
-        return function ([attr]) {
+        return function ([attr]: string[]) {
             return function () {
                 return {
                     sum: 0,
-                    push(record) {
-                        if (!isNaN(parseFloat(record[attr]))) {
-                            this.sum += parseFloat(record[attr]);
+                    push(record: Data) {
+                        if (!isNaN(parseFloat(record[attr] as string))) {
+                            this.sum += parseFloat(record[attr] as string);
                         }
                     },
                     value() {
@@ -196,18 +199,18 @@ const aggregatorTemplates = {
         };
     },
 
-    extremes(mode, formatter = fmt) {
-        return function ([attr]) {
-            return function (data) {
+    extremes(mode: 'min' | 'max' | 'first' | 'last', formatter = fmt) {
+        return function ([attr]: string[]) {
+            return function (data: { sorters: Function }) {
                 return {
-                    val: null,
+                    val: null as Datum,
                     sorter: getSort(typeof data !== 'undefined' ? data.sorters : null, attr),
-                    push(record) {
+                    push(record: Data) {
                         let x = record[attr];
-                        if (['min', 'max'].includes(mode)) {
-                            x = parseFloat(x);
-                            if (!isNaN(x)) {
-                                this.val = Math[mode](x, this.val !== null ? this.val : x);
+                        if (mode === 'min' || mode === 'max') {
+                            const n = parseFloat(x as string);
+                            if (!isNaN(n)) {
+                                this.val = Math[mode](n, (this.val !== null ? this.val : n) as number);
                             }
                         }
                         if (mode === 'first' && this.sorter(x, this.val !== null ? this.val : x) <= 0) {
@@ -220,7 +223,7 @@ const aggregatorTemplates = {
                     value() {
                         return this.val;
                     },
-                    format(x) {
+                    format(x: number) {
                         if (isNaN(x)) {
                             return x;
                         }
@@ -232,13 +235,13 @@ const aggregatorTemplates = {
         };
     },
 
-    quantile(q, formatter = fmt) {
-        return function ([attr]) {
+    quantile(q: number, formatter = fmt) {
+        return function ([attr]: string[]) {
             return function () {
                 return {
-                    vals: [],
-                    push(record) {
-                        const x = parseFloat(record[attr]);
+                    vals: [] as number[],
+                    push(record: Data) {
+                        const x = parseFloat(record[attr] as string);
                         if (!isNaN(x)) {
                             this.vals.push(x);
                         }
@@ -259,14 +262,14 @@ const aggregatorTemplates = {
     },
 
     runningStat(mode = 'mean', ddof = 1, formatter = fmt) {
-        return function ([attr]) {
+        return function ([attr]: string[]) {
             return function () {
                 return {
                     n: 0.0,
                     m: 0.0,
                     s: 0.0,
-                    push(record) {
-                        const x = parseFloat(record[attr]);
+                    push(record: Data) {
+                        const x = parseFloat(record[attr] as string);
                         if (isNaN(x)) {
                             return;
                         }
@@ -305,18 +308,16 @@ const aggregatorTemplates = {
     },
 
     sumOverSum(formatter = fmt) {
-        return function ([num, denom]) {
+        return function ([num, denom]: string[]) {
             return function () {
                 return {
                     sumNum: 0,
                     sumDenom: 0,
-                    push(record) {
-                        if (!isNaN(parseFloat(record[num]))) {
-                            this.sumNum += parseFloat(record[num]);
-                        }
-                        if (!isNaN(parseFloat(record[denom]))) {
-                            this.sumDenom += parseFloat(record[denom]);
-                        }
+                    push(record: Data) {
+                        const _num = parseFloat(record[num] as string);
+                        if (!isNaN(_num)) { this.sumNum += _num; }
+                        const _denom = parseFloat(record[denom] as string);
+                        if (!isNaN(_denom)) { this.sumDenom += _denom; }
                     },
                     value() {
                         return this.sumNum / this.sumDenom;
@@ -328,20 +329,20 @@ const aggregatorTemplates = {
         };
     },
 
-    fractionOf(wrapped, type = 'total', formatter = fmtPct) {
-        return (...x) =>
-            function (data, rowKey, colKey) {
+    fractionOf(wrapped: Function, type: "total" | "row" | "col" = 'total', formatter = fmtPct) {
+        return (...x: any[]) =>
+            function (data: PivotData, rowKey: Datum[], colKey: Datum[]) {
                 return {
-                    selector: { total: [[], []], row: [rowKey, []], col: [[], colKey] }[type],
+                    selector: { total: [[], []], row: [rowKey, []], col: [[], colKey] }[type] ?? [],
                     inner: wrapped(...Array.from(x || []))(data, rowKey, colKey),
-                    push(record) {
+                    push(record: Data) {
                         this.inner.push(record);
                     },
                     format: formatter,
                     value() {
                         return (
                             this.inner.value() /
-                            data.getAggregator(...Array.from(this.selector || [])).inner.value()
+                            data.getAggregator(this.selector[0], this.selector[1]).inner.value()
                         );
                     },
                     numInputs: wrapped(...Array.from(x || []))().numInputs,
@@ -350,20 +351,16 @@ const aggregatorTemplates = {
     },
 };
 
-aggregatorTemplates.countUnique = (f) => aggregatorTemplates.uniques((x) => x.length, f);
-aggregatorTemplates.listUnique = (s) =>
-    aggregatorTemplates.uniques(
-        (x) => x.join(s),
-        (x) => x
-    );
-aggregatorTemplates.max = (f) => aggregatorTemplates.extremes('max', f);
-aggregatorTemplates.min = (f) => aggregatorTemplates.extremes('min', f);
-aggregatorTemplates.first = (f) => aggregatorTemplates.extremes('first', f);
-aggregatorTemplates.last = (f) => aggregatorTemplates.extremes('last', f);
-aggregatorTemplates.median = (f) => aggregatorTemplates.quantile(0.5, f);
-aggregatorTemplates.average = (f) => aggregatorTemplates.runningStat('mean', 1, f);
-aggregatorTemplates.var = (ddof, f) => aggregatorTemplates.runningStat('var', ddof, f);
-aggregatorTemplates.stdev = (ddof, f) => aggregatorTemplates.runningStat('stdev', ddof, f);
+aggregatorTemplates.countUnique = (f: Formatter) => aggregatorTemplates.uniques((x: Datum[]) => x.length, f);
+aggregatorTemplates.listUnique = (s: string) => aggregatorTemplates.uniques((x: Datum[]) => x.join(s), (x: Datum) => x);
+aggregatorTemplates.max = (f: Formatter) => aggregatorTemplates.extremes('max', f);
+aggregatorTemplates.min = (f: Formatter) => aggregatorTemplates.extremes('min', f);
+aggregatorTemplates.first = (f: Formatter) => aggregatorTemplates.extremes('first', f);
+aggregatorTemplates.last = (f: Formatter) => aggregatorTemplates.extremes('last', f);
+aggregatorTemplates.median = (f: Formatter) => aggregatorTemplates.quantile(0.5, f);
+aggregatorTemplates.average = (f: Formatter) => aggregatorTemplates.runningStat('mean', 1, f);
+aggregatorTemplates.var = (ddof: number, f: Formatter) => aggregatorTemplates.runningStat('var', ddof, f);
+aggregatorTemplates.stdev = (ddof: number, f: Formatter) => aggregatorTemplates.runningStat('stdev', ddof, f);
 
 // default aggregators & renderers use US naming and number formatting
 const aggregators = ((tpl) => ({
@@ -412,19 +409,21 @@ const locales = {
 // dateFormat deriver l10n requires month and day names to be passed in directly
 const mthNamesEn = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const dayNamesEn = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const zeroPad = (number) => `0${number}`.substr(-2, 2); // eslint-disable-line no-magic-numbers
+
+const zeroPad = (num: number) => String(num).padStart(2, '0');
 
 const derivers = {
-    bin(col, binWidth) {
-        return (record) => record[col] - (record[col] % binWidth);
+    bin(col: string, binWidth: number) {
+        return (record: Record<string, number>) => record[col] - (record[col] % binWidth);
     },
-    dateFormat(col, formatString, utcOutput = false, mthNames = mthNamesEn, dayNames = dayNamesEn) {
+    dateFormat(col: string, formatString: string, utcOutput = false, mthNames = mthNamesEn, dayNames = dayNamesEn) {
         const utc = utcOutput ? 'UTC' : '';
-        return function (record) {
-            const date = new Date(Date.parse(record[col]));
-            if (isNaN(date)) {
+        return function (record: Data) {
+            const date: Date = new Date(Date.parse(record[col] as string));
+            if (isNaN(+date)) {
                 return '';
             }
+            /** @ts-ignore */
             return formatString.replace(/%(.)/g, function (m, p) {
                 switch (p) {
                     case 'y':

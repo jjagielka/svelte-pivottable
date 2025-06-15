@@ -50,17 +50,17 @@
         return len;
     };
 
-    function redColorScaleGenerator(values: number[]) {
-        const min = Math.min.apply(Math, values);
-        const max = Math.max.apply(Math, values);
-        return (x: number) => {
+    function redColorScaleGenerator(values: Datum[]) {
+        const min = Math.min(...values.map(Number).filter((x) => x));
+        const max = Math.max(...values.map(Number).filter((x) => x));
+        return (x: Datum) => {
             // eslint-disable-next-line no-magic-numbers
-            const nonRed = 255 - Math.round((255 * (x - min)) / (max - min));
+            const nonRed = 255 - Math.round((255 * (Number(x) - min)) / (max - min));
             return `background-color: rgb(255,${nonRed},${nonRed})`;
         };
     }
 
-    const flatKey = (arr: string[]) => arr.join(String.fromCharCode(0));
+    const flatKey = (arr: Datum[]) => arr.join(String.fromCharCode(0));
     const has = (set: Set<string>, arr: string[]) => arr.every(set.has, set);
     const add = (set: Set<string>, arr: string[]) => (arr.forEach(set.add, set), set);
     const remove = (set: Set<string>, arr: string[]) => (arr.forEach(set.delete, set), set);
@@ -74,14 +74,14 @@
     let useCompactRows = $state(false);
 
     let folded = $state.raw(new Set<string>());
-    const isFolded = (keys: string[][]) => has(folded, keys.map(flatKey));
-    const fold = (keys: string[][]) => (folded = toggle(new Set(folded), keys.map(flatKey)));
+    const isFolded = (keys: Datum[][]) => has(folded, keys.map(flatKey));
+    const fold = (keys: Datum[][]) => (folded = toggle(new Set(folded), keys.map(flatKey)));
 
-    let valueCellColors = $state((r: string[], c: string[], v: number): string => "");
-    let rowTotalColors = $state((v: number): string => "");
-    let colTotalColors = $state((v: number): string => "");
+    let valueCellColors = $state((r: Datum[], c: Datum[], v: Datum): string => "");
+    let rowTotalColors = $state((v: Datum): string => "");
+    let colTotalColors = $state((v: Datum): string => "");
 
-    let [rowKeys, colKeys]: string[][][] = $derived.by(() => {
+    let [rowKeys, colKeys]: Datum[][][] = $derived.by(() => {
         let rowKeys = pivotData.getRowKeys(true);
         let colKeys = pivotData.getColKeys(true);
 
@@ -111,7 +111,7 @@
             colTotalColors = colorScaleGenerator(colTotalValues);
 
             if (opts.heatmapMode === "full") {
-                const allValues: number[] = [];
+                const allValues: Datum[] = [];
                 dataRowKeys.forEach((r) =>
                     dataColKeys.forEach((c) => allValues.push(pivotData.getAggregator(r, c).value())),
                 );
@@ -139,8 +139,8 @@
 
     let getClickHandler = $derived(
         tableOptions && tableOptions.clickCallback
-            ? (value: number, rowValues: (string | null)[], colValues: (string | null)[]) => {
-                  const filters: Record<string, string> = {};
+            ? (value: Datum, rowValues: Datum[], colValues: Datum[]) => {
+                  const filters: Data = {};
                   //   for (const i of Object.keys(pivotData.props.cols || {})) {
                   for (const i in pivotData.props.cols || []) {
                       const attr = pivotData.props.cols[i];

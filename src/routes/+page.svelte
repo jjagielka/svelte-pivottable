@@ -4,8 +4,7 @@
     import TableRenderers from "$lib/TableRenderers";
     import { derivers } from "$lib/Utilities";
     import { onMount } from "svelte";
-    // import data from "./_montreal.json";
-    import data from "./_data";
+    import data from "./_montreal.json";
 
     let plotlyRenderers = {};
     let renderers = $state({});
@@ -35,12 +34,10 @@
     };
 
     let options = {
-        // rows: ["Province", "Party"],
-        rows: ["gender", "birthday"],
-        // cols: ["Gender", "Age Bin"],
-        cols: ["colour", "successes"],
+        rows: ["Province", "Party"],
+        cols: ["Gender", "Age Bin"],
         data,
-        // derivedAttributes,
+        derivedAttributes,
         hiddenFromAggregators: ["Province", "Party"],
     };
 </script>

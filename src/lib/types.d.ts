@@ -9,3 +9,5 @@ interface Aggregator {
 }
 type Deriver = (record: Data) => Datum;
 type DerivedAttrs = Record<string, Deriver>;
+
+type Formatter = (x: number) => string;

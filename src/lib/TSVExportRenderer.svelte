@@ -2,8 +2,8 @@
     import PivotData from "./PivotData.svelte";
 
     let pivotData: PivotData,
-        rowKeys: string[][],
-        colKeys: string[][],
+        rowKeys: Datum[][],
+        colKeys: Datum[][],
         headerRow: string[],
         value: string = $state("");
 
