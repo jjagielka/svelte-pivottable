@@ -18,7 +18,6 @@
         ...restProps
     } = $props();
 
-    $inspect(restProps);
     let pivotData: PivotData,
         rowKeys: Datum[][],
         colKeys: Datum[][],
@@ -43,9 +42,10 @@
             datumKeys.push([]);
         }
 
+        let fullAggregatorName = aggregatorName;
         numInputs = aggregators[aggregatorName as keyof typeof aggregators]([])().numInputs || 0;
         if (numInputs !== 0) {
-            aggregatorName += ` of ${pivotData.props.vals.slice(0, numInputs).join(", ")}`;
+            fullAggregatorName += ` of ${pivotData.props.vals.slice(0, numInputs).join(", ")}`;
         }
         const dataTemp = traceKeys.map((traceKey) => {
             const values = [];
@@ -59,10 +59,10 @@
                 values.push(isFinite(val) ? val : null);
                 labels.push(datumKey.join("-") || " ");
             }
-            const trace: Partial<PlotData> = { name: traceKey.join("-") || aggregatorName };
+            const trace: Partial<PlotData> = { name: traceKey.join("-") || fullAggregatorName };
             if (traceOptions.type === "pie") {
                 trace.values = values;
-                trace.labels = labels.length > 1 ? labels : [aggregatorName];
+                trace.labels = labels.length > 1 ? labels : [fullAggregatorName];
             } else {
                 trace.x = transpose ? values : labels;
                 trace.y = transpose ? labels : values;
@@ -70,7 +70,7 @@
             return Object.assign(trace, traceOptions) as Partial<PlotData>;
         });
 
-        let titleText = aggregatorName;
+        let titleText = fullAggregatorName;
         hAxisTitle = transpose ? pivotData.props.rows.join("-") : pivotData.props.cols.join("-");
         groupByTitle = transpose ? pivotData.props.cols.join("-") : pivotData.props.rows.join("-");
         if (hAxisTitle !== "") {

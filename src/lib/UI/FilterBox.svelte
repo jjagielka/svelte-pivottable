@@ -41,9 +41,7 @@
     function selectOnly(ev: MouseEvent, value: string) {
         ev.preventDefault();
         ev.stopPropagation();
-        console.log("selectOnly", value);
         setValuesInFilter(values.filter((y: string) => y !== value));
-        // onchange(valueFilter);
     }
 
     function select(all: boolean) {

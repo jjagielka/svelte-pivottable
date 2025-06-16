@@ -1,19 +1,15 @@
 <script lang="ts">
-    import { clickClose } from "./utils";
-
     let {
         children,
         handle, // query
         close,
         onclose,
-        // onclick,
     } = $props();
 
     let left = $state(0);
     let top = $state(0);
 
     let moving = false;
-    let self: HTMLElement | undefined = $state();
 
     function onMouseDown() {
         moving = true;
@@ -33,28 +29,18 @@
     function init(node: HTMLElement) {
         const handleElem = node.querySelector(handle) ?? node;
         handleElem.addEventListener("mousedown", onMouseDown, true);
+
+        const closeElem = node.querySelector(close);
+        closeElem?.addEventListener("click", onclose, true);
+
         return () => {
             handleElem.removeEventListener("mousedown", onMouseDown, true);
+            closeElem?.removeEventListener("click", onclose, true);
         };
     }
-
-    function onclick(ev: MouseEvent) {
-        if (ev.target === self?.querySelector(close)) {
-            onclose(ev);
-        }
-    }
-    // use:clickClose={close}
 </script>
 
-<!-- svelte-ignore a11y_click_events_have_key_events -->
-<section
-    bind:this={self}
-    {@attach init}
-    style="left: {left}px; top: {top}px;"
-    class={"draggable"}
-    {onclick}
-    role="presentation"
->
+<section {@attach init} style="left: {left}px; top: {top}px;" class={"draggable"} role="presentation">
     {@render children()}
 </section>
 
