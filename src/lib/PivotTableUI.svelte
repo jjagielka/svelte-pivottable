@@ -37,7 +37,7 @@
     let valueFilter: FitlerSet = $state({});
     setContext<FitlerSet>("valueFilter", valueFilter);
 
-    let unusedOrder: string[] = [];
+    let unusedOrder: string[] = $state.raw([]);
 
     const notHidden = (e: string) => !hiddenAttributes.includes(e) && !hiddenFromDragDrop.includes(e);
 

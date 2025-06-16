@@ -34,8 +34,9 @@
     };
 
     let options = {
-        rows: ["Province", "Party", "Name1"],
+        rows: ["Province", "Party"],
         cols: ["Gender", "Age Bin"],
+
         data,
         derivedAttributes,
         hiddenFromAggregators: ["Province", "Party"],
