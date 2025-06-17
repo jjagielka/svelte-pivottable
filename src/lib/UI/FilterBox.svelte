@@ -3,13 +3,13 @@
 </script>
 
 <script lang="ts">
-    import type { FitlerSet } from "$lib/types";
+    import type { FilterSet } from "$lib/types";
 
     import { getContext } from "svelte";
 
     let { name, values, menuLimit = 500 } = $props();
 
-    let globalFilter = getContext<FitlerSet>("valueFilter");
+    let globalFilter = getContext<FilterSet>("valueFilter");
     let valueFilter = $state(globalFilter[name] ?? {});
 
     let filterText = $state("");

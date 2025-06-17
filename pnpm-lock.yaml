@@ -11,6 +11,9 @@ importers:
       sortablejs:
         specifier: ^1.15.6
         version: 1.15.6
+      svelte:
+        specifier: ^5.33.19
+        version: 5.33.19
     devDependencies:
       '@sveltejs/adapter-static':
         specifier: ^3.0.8
@@ -30,9 +33,6 @@ importers:
       '@types/sortablejs':
         specifier: ^1.15.8
         version: 1.15.8
-      svelte:
-        specifier: ^5.33.19
-        version: 5.33.19
       svelte-check:
         specifier: ^4.2.1
         version: 4.2.1(picomatch@4.0.2)(svelte@5.33.19)(typescript@5.8.3)

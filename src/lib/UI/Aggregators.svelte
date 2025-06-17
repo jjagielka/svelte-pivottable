@@ -19,6 +19,7 @@
         value_z_to_a: { rowSymbol: "↑", colSymbol: "←", next: "key_a_to_z" },
     };
 
+    // is it a time to use array.toSpliced(index, 1, value); ?
     const setAt = (array: any[], index: number, value: any) => Object.assign([], array, { [index]: value });
 </script>
 

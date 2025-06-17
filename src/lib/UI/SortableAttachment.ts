@@ -4,8 +4,8 @@ import Sortable from "sortablejs";
 
 export default function (options = {}, onchange: (v: (string | undefined)[]) => void) {
 
-    const notify = (el: Element) => {
-        const val = [...el.children].map((i) => (i as HTMLElement).dataset.id); //.filter(x => x);
+    const notify = (el: HTMLElement) => {
+        const val = Array.from(el.children).map((i) => (i as HTMLElement).dataset.id); //.filter(x => x);
         onchange(val)
     }
 

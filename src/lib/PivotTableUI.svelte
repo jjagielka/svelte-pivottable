@@ -8,7 +8,7 @@
     import Dropdown from "./UI/Dropdown.svelte";
     import MainTable from "./UI/MainTable.svelte";
     import { aggregators as defaultAggregators, sortAs } from "./Utilities";
-    import type { PivotTableUIProps, FitlerSet } from "./types";
+    import type { PivotTableUIProps, FilterSet } from "./types";
 
     let {
         rendererName = "Table",
@@ -35,8 +35,8 @@
         ...restProps
     }: PivotTableUIProps = $props();
 
-    let valueFilter: FitlerSet = $state({});
-    setContext<FitlerSet>("valueFilter", valueFilter);
+    let valueFilter: FilterSet = $state({});
+    setContext<FilterSet>("valueFilter", valueFilter);
 
     let unusedOrder: string[] = $state.raw([]);
 
@@ -83,18 +83,24 @@
     });
 
     let valAttrs: string[] = $derived(
-        Object.keys(attrValues).filter((e) => !hiddenAttributes.includes(e) && !hiddenFromAggregators.includes(e)),
+        Object.keys(attrValues).filter(
+            (e) => !hiddenAttributes.includes(e) && !hiddenFromAggregators.includes(e),
+        ),
     );
 
     const firstKey = (x: object) => Object.keys(x)[0];
 
     let renderer = $derived(
-        renderers[(rendererName in renderers ? rendererName : firstKey(renderers)) as keyof typeof renderers],
+        renderers[
+            (rendererName in renderers ? rendererName : firstKey(renderers)) as keyof typeof renderers
+        ],
     );
 
     let aggregator = $derived(
         aggregators[
-            (aggregatorName in aggregators ? aggregatorName : firstKey(aggregators)) as keyof typeof aggregators
+            (aggregatorName in aggregators
+                ? aggregatorName
+                : firstKey(aggregators)) as keyof typeof aggregators
         ],
     );
 </script>
@@ -116,15 +122,33 @@
     {/snippet}
 
     {#snippet unusedAttrsCell()}
-        <DnDCell {sorters} {attrValues} items={unusedAttrs} onChange={(v: string[]) => (unusedOrder = v)} {menuLimit} />
+        <DnDCell
+            {sorters}
+            {attrValues}
+            items={unusedAttrs}
+            onChange={(v: string[]) => (unusedOrder = v)}
+            {menuLimit}
+        />
     {/snippet}
 
     {#snippet colAttrsCell()}
-        <DnDCell {sorters} {attrValues} items={colAttrs} onChange={(v: string[]) => (cols = v)} {menuLimit} />
+        <DnDCell
+            {sorters}
+            {attrValues}
+            items={colAttrs}
+            onChange={(v: string[]) => (cols = v)}
+            {menuLimit}
+        />
     {/snippet}
 
     {#snippet rowAttrsCell()}
-        <DnDCell {sorters} {attrValues} items={rowAttrs} onChange={(v: string[]) => (rows = v)} {menuLimit} />
+        <DnDCell
+            {sorters}
+            {attrValues}
+            items={rowAttrs}
+            onChange={(v: string[]) => (rows = v)}
+            {menuLimit}
+        />
     {/snippet}
 
     {#snippet outputCell()}

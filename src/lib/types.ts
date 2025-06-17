@@ -16,14 +16,14 @@ export type DerivedAttrs = Record<string, Deriver>;
 export type Formatter = (x: number) => string;
 
 export type Filter = Record<string, boolean>
-export type FitlerSet = Record<string, Filter>
+export type FilterSet = Record<string, Filter>
 
 export interface PivotDataProps {
     cols: string[];
     rows: string[];
     vals: string[];
     sorters: Record<string, Function>;
-    valueFilter: FitlerSet;
+    valueFilter: FilterSet;
     rowOrder: string;
     colOrder: string;
     derivedAttributes: Record<string, any>;
