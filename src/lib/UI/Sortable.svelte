@@ -8,9 +8,6 @@
 
     let { children, options = {}, items = [], onchange } = $props();
 
-    // items = items || [];
-    // options = options || {};
-
     function create(node: HTMLElement) {
         console.log("create", node, node.parentElement, options, items);
         if (!node.parentElement) return;

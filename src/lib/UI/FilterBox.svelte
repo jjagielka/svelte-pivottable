@@ -10,7 +10,7 @@
     let { name, values, menuLimit = 500 } = $props();
 
     let globalFilter = getContext<FitlerSet>("valueFilter");
-    let valueFilter = $state(globalFilter[name] || {});
+    let valueFilter = $state(globalFilter[name] ?? {});
 
     let filterText = $state("");
 
