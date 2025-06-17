@@ -1,4 +1,6 @@
 
+import type { Datum } from "plotly.js";
+import type { Aggregator, Data, DerivedAttrs, PivotDataProps, Values } from "./types";
 import { aggregators, getSort, naturalSort } from "./Utilities";
 
 

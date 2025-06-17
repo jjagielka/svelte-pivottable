@@ -12,6 +12,7 @@
 
 import { fmt, fmtInt, fmtPct } from "./formatters";
 import type PivotData from "./PivotData";
+import type { Data, Datum, Formatter } from "./types";
 
 
 const rx = /(\d+)|(\D+)/g;

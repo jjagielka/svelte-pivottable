@@ -3,6 +3,8 @@
 </script>
 
 <script lang="ts">
+    import type { FitlerSet } from "$lib/types";
+
     import { getContext } from "svelte";
 
     let { name, values, menuLimit = 500 } = $props();

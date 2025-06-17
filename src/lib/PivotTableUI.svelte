@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { setContext, type Component } from "svelte";
+    import { setContext } from "svelte";
     import PivotData from "./PivotData";
     import PivotTable from "./PivotTable.svelte";
     import TableRenderers from "./TableRenderers";
@@ -8,6 +8,7 @@
     import Dropdown from "./UI/Dropdown.svelte";
     import MainTable from "./UI/MainTable.svelte";
     import { aggregators as defaultAggregators, sortAs } from "./Utilities";
+    import type { PivotTableUIProps, FitlerSet } from "./types";
 
     let {
         rendererName = "Table",

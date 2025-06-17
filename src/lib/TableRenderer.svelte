@@ -1,7 +1,8 @@
 <script lang="ts">
+    import "./grouping.css";
     import PivotData from "./PivotData";
     import "./pivottable.css";
-    import "./grouping.css";
+    import type { Data, Datum, TableRendererProps } from "./types";
 
     let {
         tableColorScaleGenerator = redColorScaleGenerator,

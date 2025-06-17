@@ -1,5 +1,6 @@
 <script lang="ts">
     import PivotData from "./PivotData";
+    import type { Datum } from "./types";
 
     let pivotData: PivotData,
         rowKeys: Datum[][],

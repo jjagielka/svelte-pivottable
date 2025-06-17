@@ -2,6 +2,7 @@
     import type { Layout, PlotData } from "plotly.js";
     import PivotData from "./PivotData";
     import Plotly from "./UI/Plotly.svelte";
+    import type { Datum } from "./types";
 
     let {
         plotlyOptions = {},

@@ -1,23 +1,24 @@
+import type { Component } from "svelte";
 
 
-type Datum = string | number | Date | null;
-type Data = Record<string, Datum>;
-type Values = Datum[];
-interface Aggregator {
+export type Datum = string | number | Date | null;
+export type Data = Record<string, Datum>;
+export type Values = Datum[];
+export interface Aggregator {
     push: (record: Data) => void,
     value: () => Datum,
     format: (x: any) => string,
     [k: string]: any
 }
-type Deriver = (record: Data) => Datum;
-type DerivedAttrs = Record<string, Deriver>;
+export type Deriver = (record: Data) => Datum;
+export type DerivedAttrs = Record<string, Deriver>;
 
-type Formatter = (x: number) => string;
+export type Formatter = (x: number) => string;
 
-type Filter = Record<string, boolean>
-type FitlerSet = Record<string, Filter>
+export type Filter = Record<string, boolean>
+export type FitlerSet = Record<string, Filter>
 
-interface PivotDataProps {
+export interface PivotDataProps {
     cols: string[];
     rows: string[];
     vals: string[];
@@ -33,7 +34,7 @@ interface PivotDataProps {
     data: Data[] | Datum[][] | Function;
 }
 
-interface TableRendererProps extends PivotDataProps {
+export interface TableRendererProps extends PivotDataProps {
     tableColorScaleGenerator: (values: Datum[]) => (x: Datum) => string;
     tableOptions: {
         clickCallback?: (e: MouseEvent, value: Datum, filters: Data, pivotData: any) => void;
@@ -44,11 +45,11 @@ interface TableRendererProps extends PivotDataProps {
     };
 }
 
-interface PivotTableUIProps extends Partial<TableRendererProps> {
+export interface PivotTableUIProps extends Partial<TableRendererProps> {
     aggregatorName?: string;
     aggregators?: Record<string, Aggregator>;
     rendererName?: string;
-    renderers?: Record<string, Component>;
+    renderers?: Record<string, Component<any>>;
     hiddenAttributes?: string[];
     hiddenFromAggregators?: string[];
     hiddenFromDragDrop?: string[];
