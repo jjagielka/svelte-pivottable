@@ -1,5 +1,6 @@
 import PlotlyComponent from './PlotlyRenderer.svelte';
 import ScatterRenerer from './ScatterRenderer.svelte';
+import { initPlotly } from './UI/Plotly.svelte';
 import { partial } from './UI/utils';
 
 function makeRenderer(component: typeof PlotlyComponent, traceOptions = {}, layoutOptions = {}, transpose = false) {
@@ -8,6 +9,8 @@ function makeRenderer(component: typeof PlotlyComponent, traceOptions = {}, layo
 
 export default function (Plotly: any) {
     if (!Plotly) { return {} };
+
+    initPlotly(Plotly);
 
     return {
         'Grouped Column Chart': makeRenderer(PlotlyComponent, { type: 'bar' }, { barmode: 'group' }),
