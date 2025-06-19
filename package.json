@@ -1,12 +1,11 @@
 {
   "name": "svelte-pivottable",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A Svelte-based pivot table with grouping",
   "scripts": {
     "dev": "vite dev",
     "build": "svelte-kit sync && svelte-package",
-    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-    "prepublishOnly": "echo 'Did you mean to publish `./package/`, instead of `./`?' && exit 1"
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
   },
   "repository": {
     "type": "git",
@@ -22,6 +21,7 @@
     "email": "jjagielka@gmail.com"
   },
   "license": "MIT",
+  "files": ["dist"],
   "exports":{
     ".":{
       "types": "./dist/index.d.ts",
