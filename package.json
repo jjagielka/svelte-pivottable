@@ -1,6 +1,6 @@
 {
   "name": "svelte-pivottable",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "A Svelte-based pivot table with grouping",
   "scripts": {
     "dev": "vite dev",
@@ -21,39 +21,37 @@
     "email": "jjagielka@gmail.com"
   },
   "license": "MIT",
-  "files": ["dist"],
-  "exports":{
-    ".":{
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
       "types": "./dist/index.d.ts",
       "svelte": "./dist/index.js"
     },
-    "./PivotTable":{
-      "types":"./dist/PivotTable.svelte.d.ts",
-      "svelte":"./dist/PivotTable.svelte"
+    "./PivotTable": {
+      "types": "./dist/PivotTable.svelte.d.ts",
+      "svelte": "./dist/PivotTable.svelte"
     },
-    "./PivotTableUI":{
-      "types":"./dist/PivotTableUI.svelte.d.ts",
-      "svelte":"./dist/PivotTableUI.svelte"
+    "./PivotTableUI": {
+      "types": "./dist/PivotTableUI.svelte.d.ts",
+      "svelte": "./dist/PivotTableUI.svelte"
     },
-    "./TableRenderers":{
-      "types":"./dist/TableRenderers.d.ts",
-      "default":"./dist/TableRenderers.js"
+    "./TableRenderers": {
+      "types": "./dist/TableRenderers.d.ts",
+      "default": "./dist/TableRenderers.js"
     },
-    "./PlotlyRenderers":{
-      "types":"./dist/PlotlyRenderers.d.ts",
-      "default":"./dist/PlotlyRenderers.js"
+    "./PlotlyRenderers": {
+      "types": "./dist/PlotlyRenderers.d.ts",
+      "default": "./dist/PlotlyRenderers.js"
     },
-    "./ScatterRenderer":{
-      "types":"./dist/ScatterRenderer.svelte.d.ts",
-      "svelte":"./dist/ScatterRenderer.svelte"
+    "./Utilities": {
+      "types": "./dist/Utilities.d.ts",
+      "default": "./dist/Utilities.js"
     },
-    "./Utilities":{
-      "types":"./dist/Utilities.d.ts",
-      "default":"./dist/Utilities.js"
-    },
-    "./formatters":{
-      "types":"./dist/formatters.d.ts",
-      "default":"./dist/formatters.js"
+    "./formatters": {
+      "types": "./dist/formatters.d.ts",
+      "default": "./dist/formatters.js"
     }
   },
   "bugs": {
