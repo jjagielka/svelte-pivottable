@@ -164,9 +164,12 @@ const aggregatorTemplates: Record<string, Function> = {
             return function () {
                 return {
                     uniq: [] as Datum[],
+                    seen: new Set<Datum>(),
                     push(record: Data) {
-                        if (!Array.from(this.uniq).includes(record[attr])) {
-                            this.uniq.push(record[attr]);
+                        const v = record[attr];
+                        if (!this.seen.has(v)) {
+                            this.seen.add(v);
+                            this.uniq.push(v);
                         }
                     },
                     value() {

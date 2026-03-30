@@ -8,7 +8,8 @@ import { aggregators, getSort, naturalSort } from "./Utilities";
 // [1,2,3] -> [[1], [1,2], [1,2,3]]
 const subarrays = <T>(array: T[]) => array.map((d, i) => array.slice(0, i + 1));
 
-const flatKey = (arr: Datum[]) => arr.join(String.fromCharCode(0));
+const NULL_CHAR = String.fromCharCode(0);
+const flatKey = (arr: Datum[]) => arr.join(NULL_CHAR);
 
 /*
 Data Model class
@@ -39,6 +40,9 @@ class PivotData {
     allTotal: Aggregator;
     sorted: boolean;
     aggregator: typeof aggregators["Count"];
+    _hasFilter: boolean;
+    _leafColKeys?: Datum[][];
+    _leafRowKeys?: Datum[][];
 
     constructor(inputProps = {}) {
         this.props = Object.assign({}, PivotData.defaultProps, inputProps);
@@ -51,6 +55,7 @@ class PivotData {
         this.colTotals = {};
         this.allTotal = this.aggregator(this, [], []);
         this.sorted = false;
+        this._hasFilter = Object.keys(this.props.valueFilter).length > 0;
 
         // iterate through input, accumulating data for cells
         PivotData.forEachRecord(this.props.data, this.props.derivedAttributes, (record: Data) => {
@@ -61,6 +66,7 @@ class PivotData {
     }
 
     filter(record: Data) {
+        if (!this._hasFilter) return true;
         for (const k in this.props.valueFilter) {
             /* @ts-ignore */
             if (record[k] in (this.props.valueFilter[k] || {})) {
@@ -86,7 +92,7 @@ class PivotData {
     }
 
     arrSort(attrs: string[], nulls_first: boolean) {
-        const sortersArr = Array.from(attrs).map((a) => getSort(this.props.sorters, a));
+        const sortersArr = attrs.map((a) => getSort(this.props.sorters, a));
 
         return function (a: Values, b: Values) {
             // Why that was used here?
@@ -131,43 +137,54 @@ class PivotData {
 
     getColKeys(all_keys = false) {
         this.sortKeys();
-        return all_keys ? this.colKeys : this.colKeys.filter((x) => x.length === this.props.cols.length);
+        if (all_keys) return this.colKeys;
+        return (this._leafColKeys ??= this.colKeys.filter((x) => x.length === this.props.cols.length));
     }
 
     getRowKeys(all_keys = false) {
         this.sortKeys();
-        return all_keys ? this.rowKeys : this.rowKeys.filter((x) => x.length === this.props.rows.length);
+        if (all_keys) return this.rowKeys;
+        return (this._leafRowKeys ??= this.rowKeys.filter((x) => x.length === this.props.rows.length));
     }
 
     processRecord(record: Data) {
-
         // this code is called in a tight loop
-        let _colKeys: Datum[] = [];
-        let _rowKeys: Datum[] = [];
-        for (const x of Array.from(this.props.cols)) {
-            _colKeys.push(x in record ? record[x] : 'null');
+        const cols = this.props.cols;
+        const rows = this.props.rows;
+        const grouping = this.props.grouping;
+        const colLen = cols.length;
+        const rowLen = rows.length;
+
+        const _colKeys: Datum[] = new Array(colLen);
+        const _rowKeys: Datum[] = new Array(rowLen);
+        for (let i = 0; i < colLen; i++) {
+            const x = cols[i];
+            _colKeys[i] = x in record ? record[x] : 'null';
         }
-        for (const x of Array.from(this.props.rows)) {
-            _rowKeys.push(x in record ? record[x] : 'null');
+        for (let i = 0; i < rowLen; i++) {
+            const x = rows[i];
+            _rowKeys[i] = x in record ? record[x] : 'null';
         }
 
-        let colKeys = this.props.grouping ? subarrays(_colKeys) : [_colKeys];
-        let rowKeys = this.props.grouping ? subarrays(_rowKeys) : [_rowKeys];
+        const colKeys = grouping ? subarrays(_colKeys) : [_colKeys];
+        const rowKeys = grouping ? subarrays(_rowKeys) : [_rowKeys];
+        const flatColKeys = colKeys.map(flatKey);
 
         this.allTotal.push(record);
 
         for (const rowKey of rowKeys) {
             const flatRowKey = flatKey(rowKey);
 
-            for (const colKey of colKeys) {
-                const flatColKey = flatKey(colKey);
+            for (let ci = 0; ci < colKeys.length; ci++) {
+                const colKey = colKeys[ci];
+                const flatColKey = flatColKeys[ci];
 
                 if (rowKey.length !== 0) {
                     if (!this.rowTotals[flatRowKey]) {
                         this.rowKeys.push(rowKey);
                         this.rowTotals[flatRowKey] = this.aggregator(this, rowKey, []);
                     }
-                    if (!(this.props.grouping && colKey.length !== 1)) {
+                    if (!(grouping && colKey.length !== 1)) {
                         this.rowTotals[flatRowKey].push(record);
                     }
                 }
@@ -177,7 +194,7 @@ class PivotData {
                         this.colKeys.push(colKey);
                         this.colTotals[flatColKey] = this.aggregator(this, [], colKey);
                     }
-                    if (!(this.props.grouping && rowKey.length !== 1)) {
+                    if (!(grouping && rowKey.length !== 1)) {
                         this.colTotals[flatColKey].push(record);
                     }
                 }
@@ -207,7 +224,7 @@ class PivotData {
         } else if (colKey.length === 0) {
             agg = this.rowTotals[flatRowKey];
         } else {
-            agg = this.tree[flatRowKey][flatColKey];
+            agg = this.tree[flatRowKey]?.[flatColKey];
         }
         return (
             agg || {
@@ -276,7 +293,7 @@ class PivotData {
             }
 
             // array of objects
-            return Array.from(input as Data[]).map(addRecord);
+            return (input as Data[]).map(addRecord);
         }
         throw new Error('unknown input format');
     };
