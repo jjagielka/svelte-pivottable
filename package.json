@@ -1,6 +1,6 @@
 {
   "name": "svelte-pivottable",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "A Svelte-based pivot table with grouping",
   "scripts": {
     "dev": "vite dev",
@@ -34,6 +34,26 @@
     "./PivotTableUI":{
       "types":"./dist/PivotTableUI.svelte.d.ts",
       "svelte":"./dist/PivotTableUI.svelte"
+    },
+    "./TableRenderers":{
+      "types":"./dist/TableRenderers.d.ts",
+      "default":"./dist/TableRenderers.js"
+    },
+    "./PlotlyRenderers":{
+      "types":"./dist/PlotlyRenderers.d.ts",
+      "default":"./dist/PlotlyRenderers.js"
+    },
+    "./ScatterRenderer":{
+      "types":"./dist/ScatterRenderer.svelte.d.ts",
+      "svelte":"./dist/ScatterRenderer.svelte"
+    },
+    "./Utilities":{
+      "types":"./dist/Utilities.d.ts",
+      "default":"./dist/Utilities.js"
+    },
+    "./formatters":{
+      "types":"./dist/formatters.d.ts",
+      "default":"./dist/formatters.js"
     }
   },
   "bugs": {
