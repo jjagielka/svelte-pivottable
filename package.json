@@ -1,6 +1,6 @@
 {
   "name": "svelte-pivottable",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "A Svelte-based pivot table with grouping",
   "scripts": {
     "dev": "vite dev",
@@ -59,21 +59,21 @@
   },
   "homepage": "https://github.com/jjagielka/svelte-pivottable#readme",
   "devDependencies": {
-    "@sveltejs/adapter-static": "^3.0.8",
-    "@sveltejs/kit": "^2.21.4",
-    "@sveltejs/package": "^2.3.11",
-    "@sveltejs/vite-plugin-svelte": "^5.1.0",
-    "@types/plotly.js": "^3.0.0",
-    "@types/sortablejs": "^1.15.8",
-    "svelte-check": "^4.2.1",
-    "typescript": "^5.8.3",
-    "vite": "^6.3.5"
+    "@sveltejs/adapter-static": "^3.0.10",
+    "@sveltejs/kit": "^2.55.0",
+    "@sveltejs/package": "^2.5.7",
+    "@sveltejs/vite-plugin-svelte": "^5.1.1",
+    "@types/plotly.js": "^3.0.10",
+    "@types/sortablejs": "^1.15.9",
+    "svelte-check": "^4.4.6",
+    "typescript": "^5.9.3",
+    "vite": "^6.4.1"
   },
   "peerDependencies": {
     "svelte": "^5.33.19"
   },
   "type": "module",
   "dependencies": {
-    "sortablejs": "^1.15.6"
+    "sortablejs": "^1.15.7"
   }
 }
