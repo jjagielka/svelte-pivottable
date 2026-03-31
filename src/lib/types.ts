@@ -24,14 +24,14 @@ export interface PivotDataProps {
     vals: string[];
     sorters: Record<string, Function>;
     valueFilter: FilterSet;
-    rowOrder: string;
-    colOrder: string;
+    rowOrder: 'key_a_to_z' | 'key_z_to_a' | 'value_a_to_z' | 'value_z_to_a';
+    colOrder: 'key_a_to_z' | 'key_z_to_a' | 'value_a_to_z' | 'value_z_to_a';
     derivedAttributes: Record<string, any>;
     grouping: boolean;
     rowGroupBefore: boolean;
     colGroupBefore: boolean;
-    aggregator: (...args: any[]) => () => Aggregator;
-    data: Data[] | Datum[][] | Function;
+    aggregator: (...args: any[]) => (...args: any[]) => Aggregator;
+    data: Data[] | Datum[][] | ((addRecord: (record: Data) => void) => void);
 }
 
 export interface TableRendererProps extends PivotDataProps {
